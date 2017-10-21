@@ -17,13 +17,11 @@ public class Server {
     public void runServer() throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
         System.out.println("Server is up & ready for connetion....");
-        int i = 0;
 
         while(true){
             Socket socket = serverSocket.accept();
-            new ServerThread(socket, i).run();
-            System.out.println("Connection to Server ID: " + i);
-            i++;
+            ServerThread threadJob = new ServerThread(socket);
+            new Thread(threadJob).start();
         }
     }
 }

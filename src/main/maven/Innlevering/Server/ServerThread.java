@@ -3,29 +3,34 @@ package Innlevering.Server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.ServerSocket;
 
 /**
  * Created by hakonschutt on 21/10/2017.
  */
 public class ServerThread implements Runnable {
     private Socket socket;
-    private int number;
+    private PrintWriter printWriter;
+    private BufferedReader clientInput;
+    private int clientID;
 
-    public ServerThread(Socket socket, int number){
+    public ServerThread(Socket socket) throws IOException {
         this.socket = socket;
-        this.number = number;
+
+        clientInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        printWriter = new PrintWriter(socket.getOutputStream(), true);
+        clientID = Integer.parseInt(clientInput.readLine());
     }
 
-    @Override
     public void run() {
         try {
-            String msg = null;
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String message = null;
+            System.out.println("User " + clientID + " is now connected.");
 
-            while ((msg = bufferedReader.readLine()) != null){
-                System.out.println("Inncomming message from " + msg );
+            while ((message = clientInput.readLine()) != null){
+                System.out.println("Client "+ clientID + ": " + message );
+                printWriter.println("Server  ==> " + message);
             }
 
             socket.close();

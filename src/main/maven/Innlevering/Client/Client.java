@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Random;
 
 /**
@@ -13,18 +12,35 @@ import java.util.Random;
  */
 public class Client {
 
-    private static Random r = new Random();
-    private static int ID = r.nextInt(9999 - 1000) + 1000;
+    private Random r = new Random();
+    private int ID = r.nextInt(9999 - 1000) + 1000;
+    private Socket socket;
+    private BufferedReader inputData;
+    private BufferedReader outputData;
+    private PrintWriter printWriter;
 
-    public static void main(String[] args) throws UnknownHostException, IOException {
+    public Client() throws IOException {
+        socket = new Socket("localhost", 4444);
 
-        Socket socket = new Socket("localhost", 4444);
-        PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        inputData = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        outputData = new BufferedReader(new InputStreamReader(System.in));
+        printWriter = new PrintWriter(socket.getOutputStream(), true);
+
+        printWriter.println(ID);
+    }
+
+    public void initClient() throws IOException {
+        System.out.println( "Your session ID is " + ID + ".");
 
         while(true){
-            String readerInput = bufferedReader.readLine();
-            printWriter.println(ID + ": " + readerInput);
+            String readerInput = outputData.readLine();
+            printWriter.println(readerInput);
+
+            System.out.println(inputData.readLine());
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        new Client().initClient();
     }
 }
