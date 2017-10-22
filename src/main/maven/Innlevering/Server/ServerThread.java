@@ -26,10 +26,11 @@ public class ServerThread implements Runnable {
     public void run() {
         try {
             String message = null;
-            System.out.println("User " + clientID + " is now connected.");
+            System.out.println("New user(" + clientID + ") is connected.");
+            printWriter.println("Welcome to my server");
 
             while ((message = clientInput.readLine()) != null){
-                System.out.println("Client "+ clientID + ": " + message );
+                System.out.println("User "+ clientID + ": " + message );
                 printWriter.println("Server  ==> " + message);
             }
 

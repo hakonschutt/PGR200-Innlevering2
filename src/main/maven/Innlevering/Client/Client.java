@@ -20,7 +20,7 @@ public class Client {
     private PrintWriter printWriter;
 
     public Client() throws IOException {
-        socket = new Socket("localhost", 4444);
+        socket = new Socket("localhost", 1024);
 
         inputData = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         outputData = new BufferedReader(new InputStreamReader(System.in));
@@ -31,6 +31,7 @@ public class Client {
 
     public void initClient() throws IOException {
         System.out.println( "Your session ID is " + ID + ".");
+        System.out.println(inputData.readLine());
 
         while(true){
             String readerInput = outputData.readLine();

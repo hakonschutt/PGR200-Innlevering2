@@ -1,5 +1,6 @@
 package Innlevering.Server;
 
+import Innlevering.Server.database.DatabaseSetup;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,10 +9,18 @@ import java.net.Socket;
  * Created by hakonschutt on 21/10/2017.
  */
 public class Server {
-    private static final int PORT_NUMBER = 4444;
+    private static final int PORT_NUMBER = 1024;
 
     public static void main(String[] args) throws IOException {
-        new Server().runServer();
+        DatabaseSetup dbSetup = new DatabaseSetup();
+        boolean canStartServer = dbSetup.startDatabaseCheck();
+
+        if (canStartServer) {
+            new Server().runServer();
+        } else {
+            System.out.println("Unable to start server. Check you database!");
+            System.out.println("If you haven't run the InitDatabase class, \nrun that and try starting again.");
+        }
     }
 
     public void runServer() throws IOException {
