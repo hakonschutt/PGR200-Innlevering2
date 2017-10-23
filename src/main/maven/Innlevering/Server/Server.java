@@ -1,6 +1,6 @@
 package Innlevering.Server;
 
-import Innlevering.Server.database.DatabaseSetup;
+import Innlevering.Server.database.DatabaseValidation;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,10 +12,10 @@ public class Server {
     private static final int PORT_NUMBER = 1024;
 
     public static void main(String[] args) throws IOException {
-        DatabaseSetup dbSetup = new DatabaseSetup();
-        boolean canStartServer = dbSetup.startDatabaseCheck();
+        DatabaseValidation dbSetup = new DatabaseValidation();
 
-        if (canStartServer) {
+        if (dbSetup.startDatabaseCheck()) {
+            System.out.println("Checking database for tables.");
             new Server().runServer();
         } else {
             System.out.println("Unable to start server. Check you database!");

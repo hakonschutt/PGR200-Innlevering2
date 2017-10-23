@@ -4,6 +4,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by hakonschutt on 22/10/2017.
@@ -31,7 +32,9 @@ public class InitDatabase {
             setUpDatabase();
 
             if(!handler.getScanned()){
-
+                System.out.println("Starting importing files to database");
+                InputHandler rf = new InputHandler();
+                rf.startInputScan();
                 setUpNewDB = false;
             } else {
                 if(canUsePropertyEntry()){
@@ -40,6 +43,7 @@ public class InitDatabase {
             }
         }
 
+        TimeUnit.SECONDS.sleep(2);
         System.out.println("All tables are currently present.");
         System.out.println("The server is now safe to run.");
     }

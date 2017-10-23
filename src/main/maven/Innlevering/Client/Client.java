@@ -1,11 +1,9 @@
 package Innlevering.Client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by hakonschutt on 21/10/2017.
@@ -15,29 +13,37 @@ public class Client {
     private Random r = new Random();
     private int ID = r.nextInt(9999 - 1000) + 1000;
     private Socket socket;
-    private BufferedReader inputData;
-    private BufferedReader outputData;
-    private PrintWriter printWriter;
+    private BufferedReader readInputFromCommandPromp;
+    private BufferedReader inputDataFromServer;
+    private PrintWriter outputDataFromClient;
 
     public Client() throws IOException {
         socket = new Socket("localhost", 1024);
 
-        inputData = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        outputData = new BufferedReader(new InputStreamReader(System.in));
-        printWriter = new PrintWriter(socket.getOutputStream(), true);
+        readInputFromCommandPromp = new BufferedReader(new InputStreamReader(System.in));
+        outputDataFromClient = new PrintWriter(socket.getOutputStream(), true);
+        inputDataFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        outputDataFromClient.println(String.valueOf(ID));
 
-        printWriter.println(ID);
+        System.out.println("Your session ID is " + ID + ".");
     }
 
     public void initClient() throws IOException {
-        System.out.println( "Your session ID is " + ID + ".");
-        System.out.println(inputData.readLine());
-
         while(true){
-            String readerInput = outputData.readLine();
-            printWriter.println(readerInput);
 
-            System.out.println(inputData.readLine());
+            if (inputDataFromServer.ready()){
+                String serverInput = inputDataFromServer.readLine();
+                System.out.println(serverInput);
+            }
+
+            if (readInputFromCommandPromp.ready()){
+                String clientInput = readInputFromCommandPromp.readLine();
+                outputDataFromClient.println(clientInput);
+                if(clientInput.equals("quit")) {
+                    socket.close();
+                    break;
+                }
+            }
         }
     }
 
