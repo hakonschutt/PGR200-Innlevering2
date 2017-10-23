@@ -1,5 +1,7 @@
 package Innlevering.Server;
 
+import Innlevering.Server.handlers.TableHandler;
+
 import java.io.*;
 import java.net.Socket;
 import java.io.BufferedReader;
@@ -11,10 +13,12 @@ public class ServerThread implements Runnable {
     private Socket socket;
     private BufferedReader clientInput;
     private PrintWriter threadOutput;
+    private TableHandler tableHandler;
     private int clientID;
 
     public ServerThread(Socket socket) throws IOException {
         this.socket = socket;
+        tableHandler = new TableHandler();
 
         clientInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         threadOutput = new PrintWriter(socket.getOutputStream(), true);
@@ -37,6 +41,9 @@ public class ServerThread implements Runnable {
                 } else if(message.equals("info")) {
                     printInstructions();
                 } else if (message.equals("search")){
+
+                    //TODO: Implement search function.
+
                     threadOutput.println("Server! This is a search function");
                     threadOutput.println("Server! Hello user. Type teacher to test!");
                     if(clientInput.readLine().equals("teacher")){
@@ -45,7 +52,9 @@ public class ServerThread implements Runnable {
                         threadOutput.println("Server! DIDNT WORK!");
                     }
                 } else if (message.equals("print")){
-                    threadOutput.println("Server! This is a print function");
+                    printCommand();
+                } else if (message.equals("table")){
+                    tableCommand();
                 } else {
                     threadOutput.println("Not a valid command!");
                 }
@@ -56,36 +65,58 @@ public class ServerThread implements Runnable {
             System.out.println(clientID + "- Closed the connection.");
             socket.close();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void printStringArray(String[] strings){
-        for (int i = 0; i < strings.length; i++){
-            threadOutput.println(strings[i]);
+    public void printCommand() throws Exception {
+        String[] tables = tableHandler.getAllTablesFormatted();
+        threadOutput.println(String.format("%-20S", "Choose a table by index (1-8):"));
+        threadOutput.println(String.format("%-20S", "------------------------------"));
+        printStringArrayWithIndex(tables);
+
+        int chosenTable = Integer.parseInt(clientInput.readLine());
+        if(chosenTable < 9 && chosenTable > 0 ){
+            String table = tableHandler.getChoicenTable(tables, chosenTable);
+            threadOutput.println(table);
+        } else {
+            threadOutput.println(String.format("%-20S", "Invalid table entry."));
         }
     }
 
+    public void tableCommand() throws Exception {
+        String[] tables = tableHandler.getAllTablesFormatted();
+        threadOutput.println(String.format("%-20S", "All the available tables"));
+        threadOutput.println(String.format("%-20S", "----------------------------"));
+        printStringArrayWithoutIndex(tables);
+    }
+
+    public void printStringArrayWithoutIndex(String[] strings){
+        for (int i = 0; i < strings.length; i++){
+            threadOutput.println(strings[i]);
+        }
+        threadOutput.println(" ");
+    }
+
+    public void printStringArrayWithIndex(String[] strings){
+        for (int i = 0; i < strings.length; i++){
+            String index = String.format("%-3s", (i + 1));
+            threadOutput.println(index + strings[i]);
+        }
+        threadOutput.println(" ");
+    }
 
     public void printInstructions(){
-        String line = String.format("%-25S", "-----------------------------------------");
+        String line = String.format("%-25S", "------------------------------------------");
         threadOutput.println(line);
-        String intro = String.format("%-25S", "Option commands");
-        threadOutput.println(intro);
+        threadOutput.println(String.format("%-25S", "Option commands"));
         threadOutput.println(line);
-        String infoCommand = String.format("%-10s", "info");
-        String infoInfo = String.format("%-15s", "Prints the command page");
-        threadOutput.println(infoCommand + infoInfo);
-        String searchCommand = String.format("%-10s", "search");
-        String searchInfo = String.format("%-15s", "Search in a chosen table");
-        threadOutput.println(searchCommand + searchInfo);
-        String printCommand = String.format("%-10s", "print");
-        String printInfo = String.format("%-15s", "Print table from the database");
-        threadOutput.println(printCommand + printInfo);
-        String quitCommand = String.format("%-10s", "quit");
-        String quitInfo = String.format("%-15s", "Quits the program");
-        threadOutput.println(quitCommand + quitInfo);
+        threadOutput.println(String.format("%-10s %-15s", "info", "Prints the command page"));
+        threadOutput.println(String.format("%-10s %-15s", "search", "Search in a chosen table"));
+        threadOutput.println(String.format("%-10s %-15s", "print", "Prints content from table"));
+        threadOutput.println(String.format("%-10s %-15s", "table", "Prints tables from the database"));
+        threadOutput.println(String.format("%-10s %-15s", "quit", "Quits the program"));
         threadOutput.println(line);
     }
 }

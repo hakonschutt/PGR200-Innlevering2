@@ -29,4 +29,14 @@ public class DBConnect {
             return null;
         }
     }
+
+    public String getDatabaseName(){
+        Properties properties = new Properties();
+        try (InputStream input = new FileInputStream("data.properties")) {
+            properties.load(input);
+            return properties.getProperty("db");
+        } catch (Exception e){
+            return null;
+        }
+    }
 }
