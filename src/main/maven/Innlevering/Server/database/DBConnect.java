@@ -8,9 +8,15 @@ import java.sql.Connection;
 import java.util.Properties;
 
 /**
+ * Main database class. It creates a connection to the database.
  * Created by hakonschutt on 22/10/2017.
  */
 public class DBConnect {
+
+    /**
+     * Returns a connection to the database.
+     * @return
+     */
     public Connection getConnection() {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
@@ -30,6 +36,10 @@ public class DBConnect {
         }
     }
 
+    /**
+     * Returns the databasename from the property file.
+     * @return
+     */
     public String getDatabaseName(){
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {

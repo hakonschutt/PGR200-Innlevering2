@@ -10,11 +10,17 @@ import java.sql.Statement;
 import java.util.Properties;
 
 /**
+ * This class validates if all the necassary classes are present for the server to run.
  * Created by hakonschutt on 22/10/2017.
  */
 public class DatabaseValidation {
     private DBConnect connect = new DBConnect();
 
+    /**
+     * Tests if connection works.
+     * gets all the tables and returns true if the validateTables is true. else it returns false.
+     * @return
+     */
     public boolean startDatabaseCheck () {
         try (Connection con = connect.getConnection()){
             String[] tables = getAlleTables();
@@ -25,6 +31,11 @@ public class DatabaseValidation {
         }
     }
 
+    /**
+     * Gets a list of tables, and checks if they are the same as what the program needs.
+     * @param tables
+     * @return
+     */
     private boolean validateTables(String[] tables) {
         int count = 0;
         for(int i = 0; i < tables.length; i++){
@@ -35,6 +46,11 @@ public class DatabaseValidation {
         return count == 4;
     }
 
+    /**
+     * Returns the database name in the property file.
+     * @return
+     * @throws IOException
+     */
     private String getDatabaseName() throws IOException {
         Properties properties = new Properties();
         InputStream input = new FileInputStream("data.properties");
@@ -43,6 +59,11 @@ public class DatabaseValidation {
         return properties.getProperty("db");
     }
 
+    /**
+     * Returns an array with all the tables in the database
+     * @return
+     * @throws Exception
+     */
     public String[] getAlleTables() throws Exception{
         String sql = "SHOW TABLES FROM " + getDatabaseName();
         String[] tables = new String[8];

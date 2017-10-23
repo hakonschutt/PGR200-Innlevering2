@@ -6,11 +6,21 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
+ * Server class for server - client program.
+ * Creates a socketServer with the necassary port.
+ * Sends the client into a uniq thread when a clients tries to connect
  * Created by hakonschutt on 21/10/2017.
  */
 public class Server {
     private static final int PORT_NUMBER = 1024;
 
+    /**
+     * Main method to server that makes a check for the necassary tables.
+     * If all tables are present it starts the server.
+     * If not it quits and prints out a message to the user.
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         DatabaseValidation dbSetup = new DatabaseValidation();
 
@@ -23,6 +33,11 @@ public class Server {
         }
     }
 
+    /**
+     * RunServer method starts a new socket server.
+     * It pushes the users into a uniq thread when they connect.
+     * @throws IOException
+     */
     public void runServer() throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
         System.out.println("Server is up & ready for connetion....");

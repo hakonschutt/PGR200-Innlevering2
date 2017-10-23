@@ -5,6 +5,7 @@ import Innlevering.Server.handlers.FormatHandler;
 import java.sql.*;
 
 /**
+ * Main database handler for this program.
  * Created by hakonschutt on 23/10/2017.
  */
 public class DBHandlerData {
@@ -12,12 +13,20 @@ public class DBHandlerData {
     private FormatHandler formatHandler;
     private DBConnect connect;
 
+    /**
+     * Sets up all necassary fields.
+     */
     public DBHandlerData() {
         formatHandler = new FormatHandler();
         handler = new DBHandler();
         connect = new DBConnect();
     }
 
+    /**
+     * Returns all tables in the database.
+     * @return
+     * @throws Exception
+     */
     public String[] getAllTables() throws Exception {
         String sql = handler.prepareQuery();
         String[] tables = new String[handler.getCount(handler.getTableCountQuery())];
@@ -40,6 +49,12 @@ public class DBHandlerData {
         return tables;
     }
 
+    /**
+     * returns all the columns in a given table
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
     public String[] getAllColumns(String tableName) throws Exception {
         int size = handler.getCount( handler.getColumnCountQuery( tableName ) );
         String query = handler.prepareColumnDataQuery( tableName );
@@ -48,6 +63,15 @@ public class DBHandlerData {
         return columns;
     }
 
+    /**
+     * Returns all content based on the search
+     * @param searchString
+     * @param columns
+     * @param chosenColumn
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
     public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws Exception {
         String format = formatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getSearchCount(handler.getTableEntriesCountFromSearch( tableName, chosenColumn ), searchString);
@@ -72,6 +96,12 @@ public class DBHandlerData {
         return data;
     }
 
+    /**
+     * Returns all table content for a given table
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
     public String[] getTableContent(String tableName) throws Exception {
         String format = formatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getCount(handler.getTableEntriesCount( tableName ));
@@ -92,6 +122,15 @@ public class DBHandlerData {
         return data;
     }
 
+    /**
+     * Return all table content based on a search
+     * @param finalQuery
+     * @param columns
+     * @param entrySize
+     * @param format
+     * @param searchString
+     * @return
+     */
     private String[] getAllTableContentFromSearch(String finalQuery, String[] columns, int entrySize, String format, String searchString){
         String[] dataEntries = new String[entrySize];
 
@@ -116,6 +155,14 @@ public class DBHandlerData {
         return dataEntries;
     }
 
+    /**
+     * Returns all table content based on query
+     * @param sql
+     * @param columns
+     * @param entrySize
+     * @param format
+     * @return
+     */
     private String[] getAllTableContent(String sql, String[] columns, int entrySize, String format){
         String[] dataEntries = new String[entrySize];
 
@@ -143,6 +190,12 @@ public class DBHandlerData {
         return dataEntries;
     }
 
+    /**
+     * Returns all column names from a given query
+     * @param sql
+     * @param size
+     * @return
+     */
     private String[] getColumnNames(String sql, int size){
         String[] columns = new String[size];
 
@@ -167,10 +220,23 @@ public class DBHandlerData {
 
     }
 
+    /**
+     * Returns a search query for prepared statment
+     * @param sql
+     * @param column
+     * @return
+     */
     public String prepareSearchQuery(String sql, String column){
         return sql + " WHERE " + column + " LIKE ?";
     }
 
+    /**
+     * returns a table query to get all elements of a given table
+     * @param tableName
+     * @param columns
+     * @return
+     * @throws Exception
+     */
     private String prepareTableQuery(String tableName, String[] columns) throws Exception {
         String finalSQL = "SELECT";
 
@@ -187,6 +253,12 @@ public class DBHandlerData {
         return finalSQL;
     }
 
+    /**
+     * Formats string based on the format string an object array of column entries.
+     * @param string
+     * @param formatString
+     * @return
+     */
     public String formatSingleString(String[] string, String formatString){
         return String.format(formatString, (Object[])string);
     }

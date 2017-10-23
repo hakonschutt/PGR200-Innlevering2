@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Main client class.
+ * This connects to the server and listes for input, and execute client output.
  * Created by hakonschutt on 21/10/2017.
  */
 public class Client {
@@ -17,6 +19,10 @@ public class Client {
     private BufferedReader inputDataFromServer;
     private PrintWriter outputDataFromClient;
 
+    /**
+     * Connects to the socket and sets the fields for the class
+     * @throws IOException
+     */
     public Client() throws IOException {
         socket = new Socket("localhost", 1024);
 
@@ -28,6 +34,11 @@ public class Client {
         System.out.println("Your session ID is " + ID + ".");
     }
 
+    /**
+     * Listens for input from the server and prints everything.
+     * When the server has nothing to send, the user can execute commands
+     * @throws IOException
+     */
     public void initClient() throws IOException {
         while(true){
 
@@ -47,6 +58,11 @@ public class Client {
         }
     }
 
+    /**
+     * Runs the client class.
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         new Client().initClient();
     }

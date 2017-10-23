@@ -1,6 +1,7 @@
 package Innlevering.Server.handlers;
 
 /**
+ * Keeps track of the formates in the given tables
  * Created by hakonschutt on 23/10/2017.
  */
 public class FormatHandler {
@@ -13,6 +14,9 @@ public class FormatHandler {
     private final String teacher;
     private final String teacher_subject;
 
+    /**
+     * Sets the format for all the tables
+     */
     public FormatHandler() {
         day_teacher_unavailability = "%-5s %-12s %-10s";
         field_of_study = "%-10s %-35s";
@@ -24,31 +28,67 @@ public class FormatHandler {
         teacher_subject = "%-5s %-13s %-10s";
     }
 
+    /**
+     * @return
+     */
     public String getDay_teacher_unavailability() {
         return day_teacher_unavailability;
     }
+
+    /**
+     * @return
+     */
     public String getField_of_study() {
         return field_of_study;
     }
+
+    /**
+     * @return
+     */
     public String getPossible_day() {
         return possible_day;
     }
+
+    /**
+     * @return
+     */
     public String getRoom() {
         return room;
     }
+
+    /**
+     * @return
+     */
     public String getStudy_subject() {
         return study_subject;
     }
+
+    /**
+     * @return
+     */
     public String getSubject() {
         return subject;
     }
+
+    /**
+     * @return
+     */
     public String getTeacher() {
         return teacher;
     }
+
+    /**
+     * @return
+     */
     public String getTeacher_subject() {
         return teacher_subject;
     }
 
+    /**
+     * Returns the string format of the given table
+     * @param tableName
+     * @return
+     */
     public String getFormatFromHandler(String tableName){
         switch (tableName ){
             case "day_teacher_unavailability":

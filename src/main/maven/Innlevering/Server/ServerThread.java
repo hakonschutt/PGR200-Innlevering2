@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.io.BufferedReader;
 
 /**
+ * Main thread class for server program.
+ * It runs all the necassary command the client wants to execute.
  * Created by hakonschutt on 21/10/2017.
  */
 public class ServerThread implements Runnable {
@@ -16,6 +18,12 @@ public class ServerThread implements Runnable {
     private ThreadHandler threadHandler;
     private int clientID;
 
+    /**
+     * Constructor that initiziates all fileds with neccassary information.
+     * It also sets the client id for teh current client.
+     * @param socket
+     * @throws IOException
+     */
     public ServerThread(Socket socket) throws IOException {
         this.socket = socket;
         threadHandler = new ThreadHandler();
@@ -25,6 +33,10 @@ public class ServerThread implements Runnable {
         this.clientID = Integer.parseInt(clientInput.readLine());
     }
 
+    /**
+     * Main run method for thread.
+     * It takes a user input and executes a command based of the user input.
+     */
     public void run() {
         try {
             String message = null;
@@ -61,6 +73,11 @@ public class ServerThread implements Runnable {
         }
     }
 
+    /**
+     * Retrives alle the tables for the user. Gets the chosen table, and prints all columns.
+     * When the user has picked a column it executes the search for the string within that column.
+     * @throws Exception
+     */
     private void searchCommand() throws Exception {
         String tableName = chooseTable();
         if(tableName != null){
@@ -83,6 +100,10 @@ public class ServerThread implements Runnable {
         }
     }
 
+    /**
+     * Prints the table content based of the choosen tablen i chooseTable method
+     * @throws Exception
+     */
     private void printCommand() throws Exception {
         String tableName = chooseTable();
         if(tableName != null){
@@ -90,6 +111,11 @@ public class ServerThread implements Runnable {
         }
     }
 
+    /**
+     * Prints all the tables and returns a table that the user whants to search or print from based on the method calling it
+     * @return
+     * @throws Exception
+     */
     private String chooseTable() throws Exception {
         String[] tables = threadHandler.getAllTablesFormatted();
         threadOutput.println(String.format("%-20S", "Choose a table by index (1-8):"));
@@ -107,6 +133,10 @@ public class ServerThread implements Runnable {
         return null;
     }
 
+    /**
+     * Prints all the tables in the database
+     * @throws Exception
+     */
     private void tableCommand() throws Exception {
         String[] tables = threadHandler.getAllTablesFormatted();
         threadOutput.println(String.format("%-20S", "All the available tables"));
@@ -114,12 +144,22 @@ public class ServerThread implements Runnable {
         printStringArrayWithoutIndex(tables);
     }
 
+    /**
+     * Takes a string array as a parameter, and prints all entries in a formated string to the client
+     * without an index appeanded to the entries
+     * @param strings
+     */
     private void printStringArrayWithoutIndex(String[] strings){
         for (int i = 0; i < strings.length; i++){
             threadOutput.println(strings[i]);
         }
     }
 
+    /**
+     * Takes a string array as a parameter, and prints all entries in a formated string to the client
+     * with an index appeanded to the entries
+     * @param strings
+     */
     private void printStringArrayWithIndex(String[] strings){
         for (int i = 0; i < strings.length; i++){
             String index = String.format("%-3s", (i + 1));
@@ -127,6 +167,9 @@ public class ServerThread implements Runnable {
         }
     }
 
+    /**
+     * Prints the instruction page to the client.
+     */
     private void printInstructions(){
         String line = String.format("%-25S", "------------------------------------------");
         threadOutput.println(line);
