@@ -1,6 +1,6 @@
 package Innlevering.Server;
 
-import Innlevering.Server.handlers.TableHandler;
+import Innlevering.Server.handlers.ThreadHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,12 +13,12 @@ public class ServerThread implements Runnable {
     private Socket socket;
     private BufferedReader clientInput;
     private PrintWriter threadOutput;
-    private TableHandler tableHandler;
+    private ThreadHandler threadHandler;
     private int clientID;
 
     public ServerThread(Socket socket) throws IOException {
         this.socket = socket;
-        tableHandler = new TableHandler();
+        threadHandler = new ThreadHandler();
 
         clientInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         threadOutput = new PrintWriter(socket.getOutputStream(), true);
@@ -41,16 +41,7 @@ public class ServerThread implements Runnable {
                 } else if(message.equals("info")) {
                     printInstructions();
                 } else if (message.equals("search")){
-
-                    //TODO: Implement search function.
-
-                    threadOutput.println("Server! This is a search function");
-                    threadOutput.println("Server! Hello user. Type teacher to test!");
-                    if(clientInput.readLine().equals("teacher")){
-                        threadOutput.println("Server! WORKED!");
-                    } else {
-                        threadOutput.println("Server! DIDNT WORK!");
-                    }
+                    searchCommand();
                 } else if (message.equals("print")){
                     printCommand();
                 } else if (message.equals("table")){
@@ -70,44 +61,73 @@ public class ServerThread implements Runnable {
         }
     }
 
-    public void printCommand() throws Exception {
-        String[] tables = tableHandler.getAllTablesFormatted();
+    private void searchCommand() throws Exception {
+        String tableName = chooseTable();
+        if(tableName != null){
+            String[] columns = threadHandler.getAllColumnsFormatted(tableName);
+            threadOutput.println(String.format("%-20S", "Choose a column by index (1-" + columns.length + "):"));
+            threadOutput.println(String.format("%-20S", "------------------------------"));
+            printStringArrayWithIndex(columns);
+
+            try {
+                int chosenColumn = Integer.parseInt(clientInput.readLine());
+
+                if(chosenColumn < columns.length && chosenColumn > 0){
+                    threadOutput.println(String.format("%-20S", "Search string: "));
+                    String searchString = clientInput.readLine();
+                    printStringArrayWithoutIndex(threadHandler.getSearchStringResult(searchString, columns, columns[chosenColumn - 1], tableName));
+                }
+            } catch (NumberFormatException e){
+                threadOutput.println(String.format("%-20S", "Invalid column entry."));
+            }
+        }
+    }
+
+    private void printCommand() throws Exception {
+        String tableName = chooseTable();
+        if(tableName != null){
+            printStringArrayWithoutIndex( threadHandler.getTableContent( tableName ));
+        }
+    }
+
+    private String chooseTable() throws Exception {
+        String[] tables = threadHandler.getAllTablesFormatted();
         threadOutput.println(String.format("%-20S", "Choose a table by index (1-8):"));
         threadOutput.println(String.format("%-20S", "------------------------------"));
         printStringArrayWithIndex(tables);
 
-        int chosenTable = Integer.parseInt(clientInput.readLine());
-        if(chosenTable < 9 && chosenTable > 0 ){
-            String tableName = tableHandler.getChoicenTable(tables, chosenTable);
-            printStringArrayWithoutIndex( tableHandler.getTableContent( tableName ));
-        } else {
+        try {
+            int chosenTable = Integer.parseInt(clientInput.readLine());
+            if(chosenTable < 9 && chosenTable > 0 ){
+                return threadHandler.getElementFromUserInput(tables, chosenTable);
+            }
+        } catch (NumberFormatException e){
             threadOutput.println(String.format("%-20S", "Invalid table entry."));
         }
+        return null;
     }
 
-    public void tableCommand() throws Exception {
-        String[] tables = tableHandler.getAllTablesFormatted();
+    private void tableCommand() throws Exception {
+        String[] tables = threadHandler.getAllTablesFormatted();
         threadOutput.println(String.format("%-20S", "All the available tables"));
         threadOutput.println(String.format("%-20S", "----------------------------"));
         printStringArrayWithoutIndex(tables);
     }
 
-    public void printStringArrayWithoutIndex(String[] strings){
+    private void printStringArrayWithoutIndex(String[] strings){
         for (int i = 0; i < strings.length; i++){
             threadOutput.println(strings[i]);
         }
-        threadOutput.println(" ");
     }
 
-    public void printStringArrayWithIndex(String[] strings){
+    private void printStringArrayWithIndex(String[] strings){
         for (int i = 0; i < strings.length; i++){
             String index = String.format("%-3s", (i + 1));
             threadOutput.println(index + strings[i]);
         }
-        threadOutput.println(" ");
     }
 
-    public void printInstructions(){
+    private void printInstructions(){
         String line = String.format("%-25S", "------------------------------------------");
         threadOutput.println(line);
         threadOutput.println(String.format("%-25S", "Option commands"));

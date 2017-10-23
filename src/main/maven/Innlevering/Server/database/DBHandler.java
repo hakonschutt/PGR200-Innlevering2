@@ -3,6 +3,7 @@ package Innlevering.Server.database;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 /**
@@ -26,6 +27,25 @@ public class DBHandler {
         } catch (SQLException e ){
             throw new SQLException("Unable to connect with current connection");
         }
+    }
+
+    public int getSearchCount(String sql, String searchString) throws Exception{
+
+        try (Connection con = connect.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, searchString);
+            ResultSet res = ps.executeQuery();
+            if(!res.next()) {
+                throw new SQLException("No tables where found");
+            }
+            return res.getInt("total");
+        } catch (SQLException e) {
+            return -1;
+        }
+    }
+
+    public String getTableEntriesCountFromSearch(String tableName, String columnName){
+        return "SELECT COUNT(*) as total FROM " + tableName + " WHERE " + columnName + " LIKE ?";
     }
 
     public String getTableCountQuery(){
