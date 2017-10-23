@@ -1,19 +1,22 @@
 package Innlevering.Server.handlers;
 
-import Innlevering.Server.database.DBHandler;
+import Innlevering.Server.database.DBHandlerColumnData;
+import Innlevering.Server.database.DBHandlerTableData;
 
 /**
  * Created by hakonschutt on 23/10/2017.
  */
 public class TableHandler {
-    private DBHandler handler;
+    private DBHandlerTableData tableHandler;
+    private DBHandlerColumnData columnHandler;
 
     public TableHandler(){
-        handler = new DBHandler();
+        tableHandler = new DBHandlerTableData();
+        columnHandler = new DBHandlerColumnData();
     }
 
     public String[] getAllTablesFormatted() throws Exception {
-        String[] tables = handler.getAllTables();
+        String[] tables = tableHandler.getAllTables();
 
         for(int i = 0; i < tables.length; i++){
             String temp = tables[i];
@@ -22,6 +25,11 @@ public class TableHandler {
         }
 
         return tables;
+    }
+
+    public String[] getTableContent(String tableName) throws Exception {
+        String stripTableName = tableName.replaceAll(" ", "");
+        return columnHandler.getTableContent( stripTableName );
     }
 
     public String getChoicenTable(String[] tables, int i){

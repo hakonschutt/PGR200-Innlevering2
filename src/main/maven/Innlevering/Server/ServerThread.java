@@ -78,8 +78,8 @@ public class ServerThread implements Runnable {
 
         int chosenTable = Integer.parseInt(clientInput.readLine());
         if(chosenTable < 9 && chosenTable > 0 ){
-            String table = tableHandler.getChoicenTable(tables, chosenTable);
-            threadOutput.println(table);
+            String tableName = tableHandler.getChoicenTable(tables, chosenTable);
+            printStringArrayWithoutIndex( tableHandler.getTableContent( tableName ));
         } else {
             threadOutput.println(String.format("%-20S", "Invalid table entry."));
         }

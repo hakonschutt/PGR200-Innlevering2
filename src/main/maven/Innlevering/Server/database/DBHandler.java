@@ -15,10 +15,6 @@ public class DBHandler {
         connect = new DBConnect();
     }
 
-    public String getTableCountQuery(){
-        return "SELECT COUNT(*) as total FROM information_schema.tables WHERE table_schema = '" + connect.getDatabaseName() + "'";
-    }
-
     public int getCount(String sql) throws Exception{
         try (Connection con = connect.getConnection();
              Statement stmt = con.createStatement()) {
@@ -32,29 +28,29 @@ public class DBHandler {
         }
     }
 
-    private String prepareQuery(){
+    public String getTableCountQuery(){
+        return "SELECT COUNT(*) as total FROM information_schema.tables WHERE table_schema = '" + connect.getDatabaseName() + "'";
+    }
+
+    public String getColumnCountQuery( String tableName ){
+        return "SELECT COUNT(*) as total " +
+                "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
+                tableName + "' AND table_schema = '" + connect.getDatabaseName() + "'";
+    }
+
+    public String getTableEntriesCount( String tableName ){
+        return "SELECT COUNT(*) as total FROM " + tableName;
+    }
+
+    public String prepareQuery(){
         return "SHOW TABLES FROM " + connect.getDatabaseName();
     }
 
-    public String[] getAllTables() throws Exception {
-        String sql = prepareQuery();
-        String[] tables = new String[getCount(getTableCountQuery())];
+    public String prepareColumnDataQuery( String tableName ) throws Exception {
+        String sql = "SELECT COLUMN_NAME " +
+                "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
+                tableName + "' AND table_schema = '" + connect.getDatabaseName() + "'";
 
-        try (Connection con = connect.getConnection();
-             Statement stmt = con.createStatement()) {
-            int i = 0;
-            ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
-            do {
-                tables[i] = res.getString(1);
-                i++;
-            } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Unable to connect with current connection");
-        }
-
-        return tables;
+        return sql;
     }
 }

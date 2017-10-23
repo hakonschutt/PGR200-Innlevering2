@@ -14,14 +14,14 @@ public class FormatHandler {
     private String teacher_subject;
 
     public FormatHandler() {
-        day_teacher_unavailability = "random";
-        field_of_study = "random";
-        possible_day = "random";
-        room = "random";
-        study_subject = "random";
-        subject = "random";
-        teacher = "random";
-        teacher_subject = "random";
+        day_teacher_unavailability = "%-200";
+        field_of_study = "%-200";
+        possible_day = "%-200";
+        room = "%-10s %-15s";
+        study_subject = "%-200";
+        subject = "%-200";
+        teacher = "%-200";
+        teacher_subject = "%-200";
     }
 
     public String getDay_teacher_unavailability() {
