@@ -4,85 +4,27 @@ package innlevering.server.handlers;
  * Keeps track of the formates in the given tables
  * Created by hakonschutt on 23/10/2017.
  */
-public class FormatHandler {
-    private final String day_teacher_unavailability;
-    private final String field_of_study;
-    private final String possible_day;
-    private final String room;
-    private final String study_subject;
-    private final String subject;
-    private final String teacher;
-    private final String teacher_subject;
+public enum FormatHandler {
+    DAY_TEACHER_UNAVAILABILITY("%-5s %-12s %-10s"),
+    FIELD_OF_STUDY("%-10s %-35s"),
+    POSSIBLE_DAY("%-8s %-15s"),
+    ROOM("%-9s %-15s"),
+    STUDY_SUBJECT("%-5s %-9s %-15s"),
+    SUBJECT("%-12s %-40s %-20s"),
+    TEACHER("%-5s %-27s %-35s"),
+    TEACHER_SUBJECT("%-5s %-13s %-10s");
 
-    /**
-     * Sets the format for all the tables
-     */
-    public FormatHandler() {
-        day_teacher_unavailability = "%-5s %-12s %-10s";
-        field_of_study = "%-10s %-35s";
-        possible_day = "%-8s %-15s";
-        room = "%-9s %-15s";
-        study_subject = "%-5s %-9s %-15s";
-        subject = "%-12s %-40s %-20s";
-        teacher = "%-5s %-27s %-35s";
-        teacher_subject = "%-5s %-13s %-10s";
+    private String formatString;
+
+    FormatHandler(String formatString) {
+        this.formatString = formatString;
     }
 
     /**
+     * Returns the enum string formatString.
      * @return
      */
-    public String getDay_teacher_unavailability() {
-        return day_teacher_unavailability;
-    }
-
-    /**
-     * @return
-     */
-    public String getField_of_study() {
-        return field_of_study;
-    }
-
-    /**
-     * @return
-     */
-    public String getPossible_day() {
-        return possible_day;
-    }
-
-    /**
-     * @return
-     */
-    public String getRoom() {
-        return room;
-    }
-
-    /**
-     * @return
-     */
-    public String getStudy_subject() {
-        return study_subject;
-    }
-
-    /**
-     * @return
-     */
-    public String getSubject() {
-        return subject;
-    }
-
-    /**
-     * @return
-     */
-    public String getTeacher() {
-        return teacher;
-    }
-
-    /**
-     * @return
-     */
-    public String getTeacher_subject() {
-        return teacher_subject;
-    }
+    public String formatString() { return formatString; }
 
     /**
      * Returns the string format of the given table
@@ -92,21 +34,21 @@ public class FormatHandler {
     public String getFormatFromHandler(String tableName){
         switch (tableName ){
             case "day_teacher_unavailability":
-                return getDay_teacher_unavailability();
+                return DAY_TEACHER_UNAVAILABILITY.formatString();
             case "field_of_study":
-                return getField_of_study();
+                return FIELD_OF_STUDY.formatString();
             case "possible_day":
-                return getPossible_day();
+                return POSSIBLE_DAY.formatString();
             case "room":
-                return getRoom();
+                return ROOM.formatString();
             case "study_subject":
-                return getStudy_subject();
+                return STUDY_SUBJECT.formatString();
             case "subject":
-                return getSubject();
+                return SUBJECT.formatString();
             case "teacher":
-                return getTeacher();
+                return TEACHER.formatString();
             case "teacher_subject":
-                return getTeacher_subject();
+                return TEACHER_SUBJECT.formatString();
         }
         return null;
     }
