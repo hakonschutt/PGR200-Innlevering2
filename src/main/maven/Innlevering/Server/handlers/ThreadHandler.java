@@ -1,6 +1,10 @@
 package innlevering.server.handlers;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import innlevering.server.database.DBDataHandler;
+
+import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Main thread assists class
@@ -21,7 +25,7 @@ public class ThreadHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllTablesFormatted() throws Exception {
+    public String[] getAllTablesFormatted() throws IOException, SQLException {
         String[] tables = dataHandler.getAllTables();
 
         for(int i = 0; i < tables.length; i++){
@@ -39,7 +43,7 @@ public class ThreadHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllColumnsFormatted( String tableName ) throws Exception {
+    public String[] getAllColumnsFormatted( String tableName ) throws IOException, SQLException {
         String stripTableName = tableName.replaceAll(" ", "");
         String[] columns = dataHandler.getAllColumns(stripTableName);
 
@@ -61,7 +65,7 @@ public class ThreadHandler {
      * @return
      * @throws Exception
      */
-    public String[] getSearchStringResult(String searchString, String[] columns, String chosenColumn, String tableName) throws Exception {
+    public String[] getSearchStringResult(String searchString, String[] columns, String chosenColumn, String tableName) throws IOException, SQLException {
         String stripcolumnName = chosenColumn.replaceAll(" ", "");
         String stripTableName = tableName.replaceAll(" ", "");
 
@@ -82,7 +86,7 @@ public class ThreadHandler {
      * @return
      * @throws Exception
      */
-    public String[] getTableContent(String tableName) throws Exception {
+    public String[] getTableContent(String tableName) throws IOException, SQLException {
         String stripTableName = tableName.replaceAll(" ", "");
         return dataHandler.getTableContent( stripTableName );
     }

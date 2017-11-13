@@ -21,13 +21,10 @@ public class DBValidator {
      * gets all the tables and returns true if the validateTables is true. else it returns false.
      * @return
      */
-    public boolean startDatabaseCheck () {
+    public boolean startDatabaseCheck () throws IOException, SQLException {
         try (Connection con = connect.getConnection()){
-            String[] tables = getAlleTables();
+            String[] tables = getAllTables();
             return validateTables( tables );
-        } catch (Exception e){
-            System.out.println("Unable to connection with property entry...");
-            return false;
         }
     }
 
@@ -64,7 +61,7 @@ public class DBValidator {
      * @return
      * @throws Exception
      */
-    public String[] getAlleTables() throws Exception{
+    public String[] getAllTables() throws IOException, SQLException {
         String sql = "SHOW TABLES FROM " + getDatabaseName();
         String[] tables = new String[8];
 
@@ -79,8 +76,6 @@ public class DBValidator {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Unable to connect with current connection");
         }
 
         return tables;

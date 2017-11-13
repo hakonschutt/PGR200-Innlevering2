@@ -1,9 +1,12 @@
 package innlevering.server;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import innlevering.exception.ExceptionHandler;
 import innlevering.server.database.DBValidator;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 
 /**
  * server class for server - client program.
@@ -19,33 +22,41 @@ public class Server {
      * If all tables are present it starts the server.
      * If not it quits and prints out a message to the user.
      * @param args
-     * @throws IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         DBValidator dbSetup = new DBValidator();
 
-        if (dbSetup.startDatabaseCheck()) {
-            System.out.println("Checking database for tables.");
-            new Server().runServer();
-        } else {
-            System.out.println("Unable to start server. Check you database!");
-            System.out.println("If you haven't run the initDatabase class, \nrun that and try starting again.");
+        try {
+            if (dbSetup.startDatabaseCheck()) {
+                System.out.println("Checking database for tables.");
+                new Server().runServer();
+            } else {
+                System.out.println("Unable to start server. Check you database!");
+                System.out.println("If you haven't run the initDatabase class, \nrun that and try starting again.");
+            }
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("noValidation");
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
         }
     }
 
     /**
      * RunServer method starts a new socket server.
      * It pushes the users into a uniq thread when they connect.
-     * @throws IOException
      */
-    public void runServer() throws IOException {
-        ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-        System.out.println("server is up & ready for connetion....");
+    public void runServer() {
+        try {
+            ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
+            System.out.println("server is up & ready for connetion....");
 
-        while(true){
-            Socket socket = serverSocket.accept();
-            ServerThread threadJob = new ServerThread(socket);
-            new Thread(threadJob).start();
+            while(true){
+                Socket socket = serverSocket.accept();
+                ServerThread threadJob = new ServerThread(socket);
+                new Thread(threadJob).start();
+            }
+        } catch (IOException e){
+            System.out.println("Server error " + e.getMessage());
         }
     }
 }

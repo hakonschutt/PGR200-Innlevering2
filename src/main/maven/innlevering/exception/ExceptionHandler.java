@@ -21,7 +21,7 @@ public class ExceptionHandler {
                 System.out.println("Unable to connect with the current information");
                 break;
             case "noValidation":
-                System.out.println("Unable to validate if database exists");
+                System.out.println("Unable to validate database");
                 break;
             case "outdatedConnection":
                 System.out.println("Unable to use old connection!");
@@ -89,7 +89,9 @@ public class ExceptionHandler {
             case "readProperties":
                 System.out.println("Unable to read from property file.");
                 break;
-
+            case "readInput":
+                System.out.println("Unable to read user input.");
+                break;
             default:
                 System.out.println("Unknown IO exception");
                 break;

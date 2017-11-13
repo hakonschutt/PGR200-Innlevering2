@@ -3,8 +3,11 @@ package innlevering.server.database;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -17,7 +20,7 @@ public class DBConnect {
      * Returns a connection to the database.
      * @return
      */
-    public Connection getConnection() {
+    public Connection getConnection() throws IOException, SQLException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             MysqlDataSource ds = new MysqlDataSource();
@@ -31,8 +34,8 @@ public class DBConnect {
             Connection connect = ds.getConnection();
 
             return connect;
-        } catch (Exception e){
-            return null;
+        } catch (FileNotFoundException e){
+            throw new FileNotFoundException("Unable to locate property file.");
         }
     }
 
@@ -40,12 +43,13 @@ public class DBConnect {
      * Returns the databasename from the property file.
      * @return
      */
-    public String getDatabaseName(){
+    public String getDatabaseName() throws IOException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             properties.load(input);
             return properties.getProperty("db");
-        } catch (Exception e){
+        } catch (FileNotFoundException e){
+            System.out.println("Unable to locate property file.");
             return null;
         }
     }

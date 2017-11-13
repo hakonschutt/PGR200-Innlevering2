@@ -27,6 +27,9 @@ public class SetupDatabase {
         new SetupDatabase().startInitOfDatabase();
     }
 
+    /**
+     * Main setup method. Runs through the necessary methods to execute the setupDatabase.
+     */
     public void startInitOfDatabase() {
         boolean setUpNewDB = !usePropertyEntries();
 
@@ -59,6 +62,10 @@ public class SetupDatabase {
         System.out.println("The server is now safe to run.");
     }
 
+    /**
+     * Runs a user request if the properties are usable. IF not it returns false.
+     * @return
+     */
     public boolean usePropertyEntries() {
         if(canUsePropertyEntry()){
             System.out.println("Able to use current connection!");
@@ -78,6 +85,10 @@ public class SetupDatabase {
     }
 
 
+    /**
+     * Checks if the server can run on the current property entries.
+     * @return
+     */
     public boolean canUsePropertyEntry() {
         try (Connection con = connect.getConnection()){
             String[] tables = handler.getAllTables( con );
@@ -90,6 +101,11 @@ public class SetupDatabase {
         return false;
     }
 
+    /**
+     * Validates if the tables are present in the database.
+     * @param tables
+     * @return
+     */
     private boolean validateTables(String[] tables) {
         int count = 0;
         for(int i = 0; i < tables.length; i++){
@@ -101,6 +117,10 @@ public class SetupDatabase {
         return count == 4;
     }
 
+    /**
+     * Prints property entries.
+     * @throws IOException
+     */
     public void printPropertyEntry() throws IOException {
         Properties properties = new Properties();
         InputStream input = new FileInputStream("data.properties");
@@ -112,6 +132,10 @@ public class SetupDatabase {
         System.out.println("Password: " + properties.getProperty("pass"));
     }
 
+    /**
+     * The method tries to setup a database connection. It runs until the entries are valid.
+     * When the values are evaluated it writes to the property file.
+     */
     public void setUpDatabase() {
         System.out.println("Setting up a new connection!");
         boolean works = false;

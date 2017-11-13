@@ -1,10 +1,13 @@
 package innlevering.server;
 
+import innlevering.exception.ExceptionHandler;
+import innlevering.exception.ExceptionsToClient;
 import innlevering.server.handlers.ThreadHandler;
 
 import java.io.*;
 import java.net.Socket;
 import java.io.BufferedReader;
+import java.sql.SQLException;
 
 /**
  * Main thread class for server program.
@@ -47,6 +50,13 @@ public class ServerThread implements Runnable {
             while ((message = clientInput.readLine()) != null){
                 System.out.println("User "+ clientID + ": " + message );
 
+                try {
+                    Thread.sleep(15000);
+                } catch (InterruptedException e){
+                    System.out.println();
+                }
+
+
                 if(message.equals("quit")){
                     threadOutput.println("Closing connection.");
                     break;
@@ -66,10 +76,15 @@ public class ServerThread implements Runnable {
             }
 
             System.out.println(clientID + "- Closed the connection.");
-            socket.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e){
+            ExceptionHandler.ioException("readInput");
+        } finally {
+            try {
+                threadOutput.println("Closing connection.");
+                socket.close();
+            } catch (IOException e){
+                System.out.println("Error while closing socket. " + e.getMessage());
+            }
         }
     }
 
@@ -78,15 +93,15 @@ public class ServerThread implements Runnable {
      * When the user has picked a column it executes the search for the string within that column.
      * @throws Exception
      */
-    private void searchCommand() throws Exception {
+    private void searchCommand() {
         String tableName = chooseTable();
         if(tableName != null){
-            String[] columns = threadHandler.getAllColumnsFormatted(tableName);
-            threadOutput.println(String.format("%-20S", "Choose a column by index (1-" + columns.length + "):"));
-            threadOutput.println(String.format("%-20S", "------------------------------"));
-            printStringArrayWithIndex(columns);
-
             try {
+                String[] columns = threadHandler.getAllColumnsFormatted(tableName);
+                threadOutput.println(String.format("%-20S", "Choose a column by index (1-" + columns.length + "):"));
+                threadOutput.println(String.format("%-20S", "------------------------------"));
+                printStringArrayWithIndex(columns);
+
                 int chosenColumn = Integer.parseInt(clientInput.readLine());
 
                 if(chosenColumn < columns.length && chosenColumn > 0){
@@ -96,6 +111,10 @@ public class ServerThread implements Runnable {
                 }
             } catch (NumberFormatException e){
                 threadOutput.println(String.format("%-20S", "Invalid column entry."));
+            } catch (IOException e){
+                ExceptionHandler.ioException("readProperties");
+            } catch (SQLException e){
+                threadOutput.println(ExceptionsToClient.sqlExceptions("search"));
             }
         }
     }
@@ -104,11 +123,18 @@ public class ServerThread implements Runnable {
      * Prints the table content based of the choosen tablen i chooseTable method
      * @throws Exception
      */
-    private void printCommand() throws Exception {
+    private void printCommand() {
         String tableName = chooseTable();
-        if(tableName != null){
-            printStringArrayWithoutIndex( threadHandler.getTableContent( tableName ));
+        try {
+            if(tableName != null){
+                printStringArrayWithoutIndex( threadHandler.getTableContent( tableName ));
+            }
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            threadOutput.println(ExceptionsToClient.sqlExceptions("print"));
         }
+
     }
 
     /**
@@ -116,19 +142,25 @@ public class ServerThread implements Runnable {
      * @return
      * @throws Exception
      */
-    private String chooseTable() throws Exception {
-        String[] tables = threadHandler.getAllTablesFormatted();
-        threadOutput.println(String.format("%-20S", "Choose a table by index (1-8):"));
-        threadOutput.println(String.format("%-20S", "------------------------------"));
-        printStringArrayWithIndex(tables);
-
+    private String chooseTable() {
         try {
-            int chosenTable = Integer.parseInt(clientInput.readLine());
-            if(chosenTable < 9 && chosenTable > 0 ){
-                return threadHandler.getElementFromUserInput(tables, chosenTable);
+            String[] tables = threadHandler.getAllTablesFormatted();
+            threadOutput.println(String.format("%-20S", "Choose a table by index (1-8):"));
+            threadOutput.println(String.format("%-20S", "------------------------------"));
+            printStringArrayWithIndex(tables);
+
+            try {
+                int chosenTable = Integer.parseInt(clientInput.readLine());
+                if(chosenTable < 9 && chosenTable > 0 ){
+                    return threadHandler.getElementFromUserInput(tables, chosenTable);
+                }
+            } catch (NumberFormatException e){
+                threadOutput.println(String.format("%-20S", "Invalid table entry."));
             }
-        } catch (NumberFormatException e){
-            threadOutput.println(String.format("%-20S", "Invalid table entry."));
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            threadOutput.println(ExceptionsToClient.sqlExceptions("table"));
         }
         return null;
     }
@@ -137,11 +169,17 @@ public class ServerThread implements Runnable {
      * Prints all the tables in the database
      * @throws Exception
      */
-    private void tableCommand() throws Exception {
-        String[] tables = threadHandler.getAllTablesFormatted();
-        threadOutput.println(String.format("%-20S", "All the available tables"));
-        threadOutput.println(String.format("%-20S", "----------------------------"));
-        printStringArrayWithoutIndex(tables);
+    private void tableCommand() {
+        try {
+            String[] tables = threadHandler.getAllTablesFormatted();
+            threadOutput.println(String.format("%-20S", "All the available tables"));
+            threadOutput.println(String.format("%-20S", "----------------------------"));
+            printStringArrayWithoutIndex(tables);
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            threadOutput.println(ExceptionsToClient.sqlExceptions("table"));
+        }
     }
 
     /**

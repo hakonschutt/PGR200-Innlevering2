@@ -2,6 +2,7 @@ package innlevering.server.database;
 
 import innlevering.server.handlers.FormatHandler;
 
+import java.io.IOException;
 import java.sql.*;
 
 /**
@@ -27,7 +28,7 @@ public class DBDataHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllTables() throws Exception {
+    public String[] getAllTables() throws IOException, SQLException {
         String sql = handler.prepareQuery();
         String[] tables = new String[handler.getCount(handler.getTableCountQuery())];
 
@@ -55,7 +56,7 @@ public class DBDataHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllColumns(String tableName) throws Exception {
+    public String[] getAllColumns(String tableName) throws IOException, SQLException {
         int size = handler.getCount( handler.getColumnCountQuery( tableName ) );
         String query = handler.prepareColumnDataQuery( tableName );
         String[] columns = getColumnNames(query, size);
@@ -72,7 +73,7 @@ public class DBDataHandler {
      * @return
      * @throws Exception
      */
-    public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws Exception {
+    public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws IOException, SQLException {
         String format = formatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getSearchCount(handler.getTableEntriesCountFromSearch( tableName, chosenColumn ), searchString);
         entrySize = entrySize > 0 ? entrySize : 0;
@@ -102,7 +103,7 @@ public class DBDataHandler {
      * @return
      * @throws Exception
      */
-    public String[] getTableContent(String tableName) throws Exception {
+    public String[] getTableContent(String tableName) throws IOException, SQLException {
         String format = formatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getCount(handler.getTableEntriesCount( tableName ));
 
@@ -131,7 +132,7 @@ public class DBDataHandler {
      * @param searchString
      * @return
      */
-    private String[] getAllTableContentFromSearch(String finalQuery, String[] columns, int entrySize, String format, String searchString){
+    private String[] getAllTableContentFromSearch(String finalQuery, String[] columns, int entrySize, String format, String searchString) throws IOException, SQLException {
         String[] dataEntries = new String[entrySize];
 
         try (Connection con = connect.getConnection();
@@ -148,8 +149,6 @@ public class DBDataHandler {
                 dataEntries[i] = formatSingleString(tempData, format);
                 i++;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return dataEntries;
@@ -163,7 +162,7 @@ public class DBDataHandler {
      * @param format
      * @return
      */
-    private String[] getAllTableContent(String sql, String[] columns, int entrySize, String format){
+    private String[] getAllTableContent(String sql, String[] columns, int entrySize, String format) throws IOException, SQLException {
         String[] dataEntries = new String[entrySize];
 
         try (Connection con = connect.getConnection();
@@ -183,8 +182,6 @@ public class DBDataHandler {
                 i++;
 
             } while (res.next());
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return dataEntries;
@@ -196,7 +193,7 @@ public class DBDataHandler {
      * @param size
      * @return
      */
-    private String[] getColumnNames(String sql, int size){
+    private String[] getColumnNames(String sql, int size) throws IOException, SQLException {
         String[] columns = new String[size];
 
         try (Connection con = connect.getConnection();
@@ -213,9 +210,8 @@ public class DBDataHandler {
                 i++;
 
             } while (res.next());
-        } catch (SQLException e){
-            e.getSQLState();
         }
+
         return columns;
 
     }
@@ -237,7 +233,7 @@ public class DBDataHandler {
      * @return
      * @throws Exception
      */
-    private String prepareTableQuery(String tableName, String[] columns) throws Exception {
+    private String prepareTableQuery(String tableName, String[] columns) {
         String finalSQL = "SELECT";
 
         for (int i = 0; i < columns.length; i++){

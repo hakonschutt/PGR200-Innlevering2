@@ -1,5 +1,6 @@
 package innlevering.server.database;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public int getCount(String sql) throws Exception{
+    public int getCount(String sql) throws IOException, SQLException {
         try (Connection con = connect.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -35,8 +36,6 @@ public class DBHandler {
                 throw new SQLException("No tables where found");
             }
             return res.getInt("total");
-        } catch (SQLException e ){
-            throw new SQLException("Unable to connect with current connection");
         }
     }
 
@@ -47,7 +46,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public int getSearchCount(String sql, String searchString) throws Exception{
+    public int getSearchCount(String sql, String searchString) throws IOException, SQLException {
 
         try (Connection con = connect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -57,8 +56,6 @@ public class DBHandler {
                 throw new SQLException("No tables where found");
             }
             return res.getInt("total");
-        } catch (SQLException e) {
-            return -1;
         }
     }
 
@@ -76,7 +73,7 @@ public class DBHandler {
      * Returns a query that can be used t check the number of tables in a database.
      * @return
      */
-    public String getTableCountQuery(){
+    public String getTableCountQuery() throws IOException {
         return "SELECT COUNT(*) as total FROM information_schema.tables WHERE table_schema = '" + connect.getDatabaseName() + "'";
     }
 
@@ -85,7 +82,7 @@ public class DBHandler {
      * @param tableName
      * @return
      */
-    public String getColumnCountQuery( String tableName ){
+    public String getColumnCountQuery( String tableName ) throws IOException {
         return "SELECT COUNT(*) as total " +
                 "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
                 tableName + "' AND table_schema = '" + connect.getDatabaseName() + "'";
@@ -104,7 +101,7 @@ public class DBHandler {
      * Returns a query that can be used to get alle tables in a database
      * @return
      */
-    public String prepareQuery(){
+    public String prepareQuery() throws IOException {
         return "SHOW TABLES FROM " + connect.getDatabaseName();
     }
 
@@ -114,7 +111,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public String prepareColumnDataQuery( String tableName ) throws Exception {
+    public String prepareColumnDataQuery( String tableName ) throws IOException {
         String sql = "SELECT COLUMN_NAME " +
                 "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
                 tableName + "' AND table_schema = '" + connect.getDatabaseName() + "'";
