@@ -64,7 +64,7 @@ public class SetupDatabase {
 
     public boolean canUsePropertyEntry(){
         try (Connection con = connect.getConnection()){
-            String[] tables = handler.getAlleTables( con );
+            String[] tables = handler.getAllTables( con );
             return validateTables( tables );
         } catch (Exception e){
             System.out.println("Unable to connection with property entry...");

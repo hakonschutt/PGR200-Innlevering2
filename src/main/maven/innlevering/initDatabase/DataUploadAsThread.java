@@ -1,11 +1,16 @@
 package innlevering.initDatabase;
 
+import innlevering.exception.ExceptionHandler;
+
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
 
 /**
+ * Class is ment to run as thread and therefor implements runnable
+ * It uploads the text files to the database
  * Created by hakonschutt on 22/10/2017.
  */
 public class DataUploadAsThread implements Runnable {
@@ -35,16 +40,15 @@ public class DataUploadAsThread implements Runnable {
      * @param fileName
      * @throws IOException
      */
-    private void createQuery(String fileName) throws IOException {
-        try{
-            String file = "input/" + fileName;
-            BufferedReader in = new BufferedReader(new FileReader(file));
-
+    private void createQuery(String fileName) throws IOException, SQLException {
+        String file = "input/" + fileName;
+        try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String table = in.readLine();
             String[] col = in.readLine().split("/");
             String[] dataType = in.readLine().split("/");
             String[] dataSize = in.readLine().split("/");
             String PK = in.readLine();
+            in.readLine();
 
             String sql;
 
@@ -56,21 +60,21 @@ public class DataUploadAsThread implements Runnable {
 
             executeCreate(sql);
 
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch (FileNotFoundException e){
+            ExceptionHandler.fileException("fileNotFound");
         }
     }
 
     /**
      * General execute create query that is used to create tables
      * @param sql
+     * @throws IOException
+     * @throws SQLException
      */
-    private void executeCreate(String sql){
+    private void executeCreate(String sql) throws IOException, SQLException{
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -78,43 +82,45 @@ public class DataUploadAsThread implements Runnable {
      * Creates insert Query from the current file
      * @param filename
      * @throws IOException
+     * @throws SQLException
      */
-    private void insertQuery(String filename) throws IOException {
+    private void insertQuery(String filename) throws IOException, SQLException {
         String file = "input/" + filename;
-        BufferedReader in = new BufferedReader(new FileReader(file));
+        try (BufferedReader in = new BufferedReader(new FileReader(file))){
+            String db = in.readLine();
+            String[] col = in.readLine().split("/");
+            for(int i = 0; i < 4; i++)
+                in.readLine();
 
-        String db = in.readLine();
-        String[] col = in.readLine().split("/");
-        String[] dataType = in.readLine().split("/");
-        String[] dataSize = in.readLine().split("/");
-        String PK = in.readLine();
+            String sql;
 
-        String sql;
-
-        String s;
-        while((s = in.readLine()) != null){
-            sql = "INSERT INTO `" + db + "` ( ";
-            for(int i = 0; i < col.length; i++){
-                if(i == col.length -1){
-                    sql += "`" + col[i] + "`";
-                } else {
-                    sql += "`" + col[i] + "`, ";
+            String s;
+            while((s = in.readLine()) != null){
+                sql = "INSERT INTO `" + db + "` ( ";
+                for(int i = 0; i < col.length; i++){
+                    if(i == col.length -1){
+                        sql += "`" + col[i] + "`";
+                    } else {
+                        sql += "`" + col[i] + "`, ";
+                    }
                 }
-            }
-            sql += ") VALUES ( ";
+                sql += ") VALUES ( ";
 
-            String[] var = s.split("/");
+                String[] var = s.split("/");
 
-            for(int i = 0; i < var.length; i++){
-                if(i == col.length -1){
-                    sql += "? ";
-                } else {
-                    sql += "?, ";
+                for(int i = 0; i < var.length; i++){
+                    if(i == col.length -1){
+                        sql += "? ";
+                    } else {
+                        sql += "?, ";
+                    }
                 }
-            }
-            sql += ")";
+                sql += ")";
 
-            executeInsert(sql, var);
+                executeInsert(sql, var);
+            }
+        } catch (FileNotFoundException e) {
+            ExceptionHandler.fileException("fileNotFound");
         }
     }
 
@@ -122,16 +128,16 @@ public class DataUploadAsThread implements Runnable {
      * Executes insert query for table information.
      * @param sql
      * @param var
+     * @throws IOException
+     * @throws SQLException
      */
-    private void executeInsert(String sql, String[] var){
+    private void executeInsert(String sql, String[] var) throws IOException, SQLException {
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             for (int i = 0; i < var.length; i++){
                 ps.setObject(i + 1, var[i]);
             }
-            int rs = ps.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println();
+            ps.executeUpdate();
         }
     }
 }

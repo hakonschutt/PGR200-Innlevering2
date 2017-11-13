@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
+ * Main Connection class. All initDatabase classes implements this classes getConnection.
  * Created by hakonschutt on 22/10/2017.
  */
 public class SetupConnection {
