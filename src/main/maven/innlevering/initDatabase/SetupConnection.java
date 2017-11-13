@@ -3,6 +3,8 @@ package innlevering.initDatabase;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,8 +19,20 @@ public class SetupConnection {
     private String host;
     private String dbName;
 
+    /**
+     * Empty constructor if the user is not testing, and doesnt want to set
+     * the table data but use the variables from property file
+     */
     public SetupConnection(){}
 
+    /**
+     * Second constructor that lets the user set custom user, pass, host and dbname.
+     * Primarily used for verifying user connection before writing properties.
+     * @param user
+     * @param pass
+     * @param host
+     * @param dbName
+     */
     public SetupConnection(String user, String pass, String host, String dbName) {
         this.user = user;
         this.pass = pass;
@@ -26,8 +40,17 @@ public class SetupConnection {
         this.dbName = dbName;
     }
 
-    public Connection testConnection (boolean withDatabaseConnection) throws SQLException {
+    /**
+     * Method can be called to test connection with or without database information
+     * This method is used when setting up the database information.
+     * It tests if it can access the database with the user information.
+     * @param withDatabaseConnection
+     * @return
+     * @throws SQLException
+     */
+    public Connection verifyConnectionWithUserInput(boolean withDatabaseConnection) throws SQLException {
         MysqlDataSource ds = new MysqlDataSource();
+
         if(withDatabaseConnection)
             ds.setDatabaseName(this.dbName);
 
@@ -40,7 +63,13 @@ public class SetupConnection {
         return connect;
     }
 
-    public Connection getConnection() {
+    /**
+     * DBConnection getConnection. Used throughout the program to get the database connection
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    public Connection getConnection() throws IOException, SQLException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             MysqlDataSource ds = new MysqlDataSource();
@@ -54,8 +83,8 @@ public class SetupConnection {
             Connection connect = ds.getConnection();
 
             return connect;
-        } catch (Exception e){
-            return null;
+        } catch (FileNotFoundException e){
+            throw new FileNotFoundException("Not able to locate property file");
         }
     }
 

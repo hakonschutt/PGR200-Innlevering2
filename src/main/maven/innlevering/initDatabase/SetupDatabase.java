@@ -135,7 +135,7 @@ public class SetupDatabase {
     private boolean connectToDatabase ( String[] dbInfo ) throws Exception {
         tempConnect = new SetupConnection(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
 
-        try (Connection con = tempConnect.testConnection(false )){
+        try (Connection con = tempConnect.verifyConnectionWithUserInput(false )){
             boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);
 
             if(!dbExists){

@@ -25,8 +25,8 @@ public class DataUploadAsThread implements Runnable {
             createQuery(file);
             insertQuery(file);
             System.out.println("Finished importing " + file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | SQLException e){
+            System.out.println("Unable to finish thread job for " + file);
         }
     }
 
