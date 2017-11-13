@@ -1,12 +1,12 @@
-package Innlevering.Server;
+package innlevering.server;
 
-import Innlevering.Server.database.DatabaseValidation;
+import innlevering.server.database.DBValidator;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Server class for server - client program.
+ * server class for server - client program.
  * Creates a socketServer with the necassary port.
  * Sends the client into a uniq thread when a clients tries to connect
  * Created by hakonschutt on 21/10/2017.
@@ -22,14 +22,14 @@ public class Server {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        DatabaseValidation dbSetup = new DatabaseValidation();
+        DBValidator dbSetup = new DBValidator();
 
         if (dbSetup.startDatabaseCheck()) {
             System.out.println("Checking database for tables.");
             new Server().runServer();
         } else {
             System.out.println("Unable to start server. Check you database!");
-            System.out.println("If you haven't run the InitDatabase class, \nrun that and try starting again.");
+            System.out.println("If you haven't run the initDatabase class, \nrun that and try starting again.");
         }
     }
 
@@ -40,7 +40,7 @@ public class Server {
      */
     public void runServer() throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-        System.out.println("Server is up & ready for connetion....");
+        System.out.println("server is up & ready for connetion....");
 
         while(true){
             Socket socket = serverSocket.accept();

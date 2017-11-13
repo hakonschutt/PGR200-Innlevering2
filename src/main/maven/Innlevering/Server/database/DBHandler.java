@@ -1,4 +1,4 @@
-package Innlevering.Server.database;
+package innlevering.server.database;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

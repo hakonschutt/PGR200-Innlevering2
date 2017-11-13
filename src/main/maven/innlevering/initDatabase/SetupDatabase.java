@@ -1,4 +1,4 @@
-package Innlevering.InitDatabase;
+package innlevering.initDatabase;
 
 import java.io.*;
 import java.sql.Connection;
@@ -13,16 +13,16 @@ import java.util.concurrent.TimeUnit;
  * when the server startes. Running this first vil insure that the server can start properly
  *
  */
-public class InitDatabase {
-    private InitDBConnect connect = new InitDBConnect();
-    private initDBHandler handler = new initDBHandler();
-    private InitDBConnect tempConnect;
+public class SetupDatabase {
+    private SetupConnection connect = new SetupConnection();
+    private DBValidationHandler handler = new DBValidationHandler();
+    private SetupConnection tempConnect;
     private Scanner sc = new Scanner( System.in );
 
-    public InitDatabase() throws IOException {}
+    public SetupDatabase() throws IOException {}
 
     public static void main(String[] args) throws Exception {
-        new InitDatabase().startInitOfDatabase();
+        new SetupDatabase().startInitOfDatabase();
     }
 
     public void startInitOfDatabase() throws Exception {
@@ -33,7 +33,7 @@ public class InitDatabase {
 
             if(!handler.getScanned()){
                 System.out.println("Starting importing files to database");
-                InputHandler rf = new InputHandler();
+                FileUploadHandler rf = new FileUploadHandler();
                 rf.startInputScan();
                 setUpNewDB = false;
             } else {
@@ -133,7 +133,7 @@ public class InitDatabase {
     }
 
     private boolean connectToDatabase ( String[] dbInfo ) throws Exception {
-        tempConnect = new InitDBConnect(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
+        tempConnect = new SetupConnection(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
 
         try (Connection con = tempConnect.testConnection(false )){
             boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);

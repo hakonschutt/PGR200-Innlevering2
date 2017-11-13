@@ -1,9 +1,8 @@
-package Innlevering.Client;
+package innlevering.client;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Main client class.

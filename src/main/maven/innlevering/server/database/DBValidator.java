@@ -1,4 +1,4 @@
-package Innlevering.Server.database;
+package innlevering.server.database;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.Properties;
  * This class validates if all the necassary classes are present for the server to run.
  * Created by hakonschutt on 22/10/2017.
  */
-public class DatabaseValidation {
+public class DBValidator {
     private DBConnect connect = new DBConnect();
 
     /**

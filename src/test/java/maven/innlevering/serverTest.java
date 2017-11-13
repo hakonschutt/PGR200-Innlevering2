@@ -1,8 +1,8 @@
 package maven.innlevering;
 
-import Innlevering.Server.database.DBConnect;
-import Innlevering.Server.database.DBHandler;
-import Innlevering.Server.handlers.ThreadHandler;
+import innlevering.server.database.DBConnect;
+import innlevering.server.database.DBHandler;
+import innlevering.server.handlers.ThreadHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

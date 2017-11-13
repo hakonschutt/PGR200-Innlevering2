@@ -1,4 +1,4 @@
-package Innlevering.Server.handlers;
+package innlevering.server.handlers;
 
 /**
  * Keeps track of the formates in the given tables

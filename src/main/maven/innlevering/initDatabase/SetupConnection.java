@@ -1,9 +1,8 @@
-package Innlevering.InitDatabase;
+package innlevering.initDatabase;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,15 +11,15 @@ import java.util.Properties;
 /**
  * Created by hakonschutt on 22/10/2017.
  */
-public class InitDBConnect {
+public class SetupConnection {
     private String user;
     private String pass;
     private String host;
     private String dbName;
 
-    public InitDBConnect(){}
+    public SetupConnection(){}
 
-    public InitDBConnect(String user, String pass, String host, String dbName) {
+    public SetupConnection(String user, String pass, String host, String dbName) {
         this.user = user;
         this.pass = pass;
         this.host = host;

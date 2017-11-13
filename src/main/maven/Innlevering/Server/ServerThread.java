@@ -1,6 +1,6 @@
-package Innlevering.Server;
+package innlevering.server;
 
-import Innlevering.Server.handlers.ThreadHandler;
+import innlevering.server.handlers.ThreadHandler;
 
 import java.io.*;
 import java.net.Socket;

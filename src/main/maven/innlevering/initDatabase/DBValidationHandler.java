@@ -1,4 +1,4 @@
-package Innlevering.InitDatabase;
+package innlevering.initDatabase;
 
 import java.io.IOException;
 import java.sql.*;
@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Created by hakonschutt on 22/10/2017.
  */
-public class initDBHandler {
+public class DBValidationHandler {
     private Boolean isScanned = true;
 
     private String getDatabaseName() throws IOException {

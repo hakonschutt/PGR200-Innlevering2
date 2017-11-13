@@ -1,6 +1,6 @@
-package Innlevering.Server.database;
+package innlevering.server.database;
 
-import Innlevering.Server.handlers.FormatHandler;
+import innlevering.server.handlers.FormatHandler;
 
 import java.sql.*;
 
@@ -8,7 +8,7 @@ import java.sql.*;
  * Main database handler for this program.
  * Created by hakonschutt on 23/10/2017.
  */
-public class DBHandlerData {
+public class DBDataHandler {
     private DBHandler handler;
     private FormatHandler formatHandler;
     private DBConnect connect;
@@ -16,7 +16,7 @@ public class DBHandlerData {
     /**
      * Sets up all necassary fields.
      */
-    public DBHandlerData() {
+    public DBDataHandler() {
         formatHandler = new FormatHandler();
         handler = new DBHandler();
         connect = new DBConnect();

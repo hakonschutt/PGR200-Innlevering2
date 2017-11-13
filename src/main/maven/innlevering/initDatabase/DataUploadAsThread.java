@@ -1,4 +1,4 @@
-package Innlevering.InitDatabase;
+package innlevering.initDatabase;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,11 +8,11 @@ import java.sql.*;
 /**
  * Created by hakonschutt on 22/10/2017.
  */
-public class initDBUploadAsThread implements Runnable {
+public class DataUploadAsThread implements Runnable {
     private String file;
-    private InitDBConnect db = new InitDBConnect();
+    private SetupConnection db = new SetupConnection();
 
-    public initDBUploadAsThread(String file) {
+    public DataUploadAsThread(String file) {
         this.file = file;
     }
 

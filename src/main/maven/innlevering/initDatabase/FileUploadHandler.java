@@ -1,14 +1,14 @@
-package Innlevering.InitDatabase;
+package innlevering.initDatabase;
 
 /**
  * Created by hakonschutt on 22/10/2017.
  */
-public class InputHandler {
+public class FileUploadHandler {
 
     public void startInputScan(){
         for (int i = 1; i <= 8; i++){
             String file = getFile(i);
-            initDBUploadAsThread job = new initDBUploadAsThread(file);
+            DataUploadAsThread job = new DataUploadAsThread(file);
             new Thread(job).start();
         }
         System.out.println();

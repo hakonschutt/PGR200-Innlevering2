@@ -1,4 +1,4 @@
-package Innlevering.Server.database;
+package innlevering.server.database;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
@@ -23,10 +23,10 @@ public class DBConnect {
             MysqlDataSource ds = new MysqlDataSource();
             properties.load(input);
 
-            ds.setDatabaseName(properties.getProperty("db"));
-            ds.setServerName(properties.getProperty("host"));
             ds.setUser(properties.getProperty("user"));
             ds.setPassword(properties.getProperty("pass"));
+            ds.setDatabaseName(properties.getProperty("db"));
+            ds.setServerName(properties.getProperty("host"));
 
             Connection connect = ds.getConnection();
 

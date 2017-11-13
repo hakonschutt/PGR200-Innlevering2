@@ -1,19 +1,19 @@
-package Innlevering.Server.handlers;
+package innlevering.server.handlers;
 
-import Innlevering.Server.database.DBHandlerData;
+import innlevering.server.database.DBDataHandler;
 
 /**
  * Main thread assists class
  * Created by hakonschutt on 23/10/2017.
  */
 public class ThreadHandler {
-    private DBHandlerData dataHandler;
+    private DBDataHandler dataHandler;
 
     /**
      * sets the field element
      */
     public ThreadHandler(){
-        dataHandler = new DBHandlerData();
+        dataHandler = new DBDataHandler();
     }
 
     /**
