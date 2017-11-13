@@ -4,14 +4,22 @@ import java.io.*;
 import java.sql.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
+ * Class is used to controll database overwriting and creating.
  * Created by hakonschutt on 22/10/2017.
  */
 public class DBValidationHandler {
     private Boolean isScanned = true;
 
+    /**
+     * Retrieves database name from property file
+     * @return
+     * @throws IOException
+     */
     private String getDatabaseName() throws IOException {
         Properties properties = new Properties();
         InputStream input = new FileInputStream("data.properties");
@@ -27,26 +35,22 @@ public class DBValidationHandler {
      * @throws SQLException
      */
     public String[] getAllTables(Connection con) throws IOException, SQLException {
-        String[] files = new FileUploadHandler().getAllFiles();
-
         String database = getDatabaseName();
         String sql = "SHOW TABLES FROM " + database;
 
-        String[] tables = new String[files.length];
+        List<String> tables = new ArrayList<>();
 
         try (Statement stmt = con.createStatement()) {
-            int i = 0;
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) {
                 throw new SQLException("No tables where found");
             }
             do {
-                tables[i] = res.getString(1);
-                i++;
+                tables.add(res.getString(1));
             } while (res.next());
         }
 
-        return tables;
+        return tables.toArray(new String[tables.size()]);
     }
 
     /**
@@ -71,6 +75,7 @@ public class DBValidationHandler {
     public void createDataBase( Connection con, String newDbName ) throws SQLException {
         try (Statement stmt = con.createStatement()){
             stmt.executeUpdate("CREATE DATABASE " + newDbName +  "");
+            this.isScanned = false;
         }
     }
 
@@ -140,7 +145,7 @@ public class DBValidationHandler {
         }
     }
 
-    public Boolean getScanned() {
+    public Boolean getIsScanned() {
         return isScanned;
     }
 }

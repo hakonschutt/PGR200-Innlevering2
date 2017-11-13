@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * Created by hakonschutt on 22/10/2017.
  */
 public class FileUploadHandler {
+
     /**
      * Method initiate the thread job
      * @throws IOException

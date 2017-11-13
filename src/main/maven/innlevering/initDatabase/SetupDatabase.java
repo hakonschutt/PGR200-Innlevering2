@@ -1,17 +1,19 @@
 package innlevering.initDatabase;
 
+import innlevering.exception.ExceptionHandler;
+
 import java.io.*;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.InputMismatchException;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by hakonschutt on 22/10/2017.
  * Init database connection. This is to create a database with all the necassary tables.
  * This insures that the server has a stable connection with all neccassaties. This is also validated
- * when the server startes. Running this first vil insure that the server can start properly
- *
+ * when the server starts. Running this first vil insure that the server can start properly
  */
 public class SetupDatabase {
     private SetupConnection connect = new SetupConnection();
@@ -19,39 +21,53 @@ public class SetupDatabase {
     private SetupConnection tempConnect;
     private Scanner sc = new Scanner( System.in );
 
-    public SetupDatabase() throws IOException {}
+    public SetupDatabase() {}
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         new SetupDatabase().startInitOfDatabase();
     }
 
-    public void startInitOfDatabase() throws Exception {
+    public void startInitOfDatabase() {
         boolean setUpNewDB = !usePropertyEntries();
 
         while (setUpNewDB){
             setUpDatabase();
 
-            if(!handler.getScanned()){
+            if(!handler.getIsScanned()){
                 System.out.println("Starting importing files to database");
-                FileUploadHandler rf = new FileUploadHandler();
-                rf.startInputScan();
+
+                try {
+                    FileUploadHandler rf = new FileUploadHandler();
+                    rf.startInputScan();
+                } catch (IOException e){
+                    ExceptionHandler.ioException("readProperties");
+                } catch (SQLException e){
+                    ExceptionHandler.sqlException("upload");
+                }
+
                 setUpNewDB = false;
             } else {
                 if(canUsePropertyEntry()){
                     setUpNewDB = false;
+                } else {
+                    System.out.println("Unable to use the entry.");
                 }
             }
         }
 
-        TimeUnit.SECONDS.sleep(2);
         System.out.println("All tables are currently present.");
         System.out.println("The server is now safe to run.");
     }
 
-    public boolean usePropertyEntries() throws IOException {
+    public boolean usePropertyEntries() {
         if(canUsePropertyEntry()){
             System.out.println("Able to use current connection!");
-            printPropertyEntry();
+            try {
+                printPropertyEntry();
+            } catch (IOException e){
+                ExceptionHandler.fileException("notAbleToRead");
+            }
+
             System.out.print("Use this connection?( yes / no ) ");
             String useDatabaseEntry = sc.nextLine();
 
@@ -62,14 +78,16 @@ public class SetupDatabase {
     }
 
 
-    public boolean canUsePropertyEntry(){
+    public boolean canUsePropertyEntry() {
         try (Connection con = connect.getConnection()){
             String[] tables = handler.getAllTables( con );
-            return validateTables( tables );
-        } catch (Exception e){
-            System.out.println("Unable to connection with property entry...");
-            return false;
+            return tables.length > 0 && validateTables( tables );
+        } catch (SQLException e) {
+            ExceptionHandler.sqlException("search");
+        } catch (IOException e) {
+            ExceptionHandler.ioException("readProperties");
         }
+        return false;
     }
 
     private boolean validateTables(String[] tables) {
@@ -94,20 +112,27 @@ public class SetupDatabase {
         System.out.println("Password: " + properties.getProperty("pass"));
     }
 
-    public void setUpDatabase() throws Exception {
+    public void setUpDatabase() {
         System.out.println("Setting up a new connection!");
         boolean works = false;
         while ( !works ){
-            works = writeDBinfo();
+            works = writeDbInfo();
             System.out.println();
         }
 
-        writeProperties();
+        try{
+            writeProperties();
+        } catch (IOException e){
+            ExceptionHandler.ioException("writeProperties");
+        }
     }
 
-    private boolean writeDBinfo() throws Exception {
+    /**
+     * Method askes for user input for database connection
+     * @return
+     */
+    private boolean writeDbInfo() {
         String[] dbInfo = new String[4];
-        System.out.println();
         System.out.print( "DB user: " );
         dbInfo[0] = sc.nextLine();
         System.out.print( "DB pass: ") ;
@@ -117,56 +142,81 @@ public class SetupDatabase {
         System.out.print( "DB name: " );
         dbInfo[3] = sc.nextLine();
 
-        return connectToDatabase(dbInfo);
+        return connectToDatabase( dbInfo );
     }
 
+    /**
+     * Writing user input to property file AFTER checking if the connection works with database
+     * @throws IOException
+     */
     private void writeProperties() throws IOException {
         Properties properties = new Properties();
-        OutputStream outputStream = new FileOutputStream("data.properties" );;
+        try (OutputStream outputStream = new FileOutputStream("data.properties")) {
+            properties.setProperty("user", tempConnect.getUser());
+            properties.setProperty("pass", tempConnect.getPass());
+            properties.setProperty("host", tempConnect.getHost());
+            properties.setProperty("db", tempConnect.getDbName());
 
-        properties.setProperty("user", tempConnect.getUser());
-        properties.setProperty("pass", tempConnect.getPass());
-        properties.setProperty("host", tempConnect.getHost());
-        properties.setProperty("db", tempConnect.getDbName());
-
-        properties.store(outputStream, null);
+            properties.store(outputStream, null);
+        }
     }
 
-    private boolean connectToDatabase ( String[] dbInfo ) throws Exception {
+    /**
+     * Method tests the connection with the user input
+     * @param dbInfo
+     * @return
+     */
+    private boolean connectToDatabase( String[] dbInfo ) {
         tempConnect = new SetupConnection(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
 
         try (Connection con = tempConnect.verifyConnectionWithUserInput(false )){
             boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);
 
             if(!dbExists){
-                handler.createDataBase(con, dbInfo[3]);
-                System.out.print("Creating database: " + dbInfo[3]);
+                try {
+                    handler.createDataBase(con, dbInfo[3]);
+                    System.out.println("Creating database: " + dbInfo[3]);
+                } catch (SQLException e) {
+                    ExceptionHandler.sqlException("createDatabase");
+                }
             } else {
                 userInputForConnectionTest(con, dbInfo[3]);
             }
-
             return true;
 
-        } catch (Exception e){
-            System.out.println("Unable to connect with the current information");
-            System.out.println("Try again: ");
-            System.out.println();
-
-            return false;
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("wrongDBInformation");
         }
+
+        System.out.print("Try again: ");
+        return false;
     }
 
+    /**
+     * Prints user instructions for when a database already exists.
+     */
     private void userInputForConnectionInstruction(){
         System.out.println("The database already exists!");
         System.out.println("How would you like to continue?");
         System.out.println("(1) Continue with this connection");
         System.out.println("(2) Change to a new database name");
         System.out.println("(3) !Overwrite the current database!");
+
     }
 
-    private void userInputForConnectionTest( Connection con, String dbName ) throws Exception {
+    /**
+     * User input IF the database already exists
+     */
+    private void userInputForConnectionTest( Connection con, String dbName ) {
         userInputForConnectionInstruction();
-        int asw = sc.nextInt();
+        int asw = 0;
+
+        try {
+            asw = sc.nextInt();
+        } catch (InputMismatchException e){
+            ExceptionHandler.inputException("intMismatch");
+        }
+
         switch(asw){
             case 1:
                 System.out.print( "Connection to " + dbName );
@@ -175,8 +225,12 @@ public class SetupDatabase {
                 changeDatabaseName(con);
                 break;
             case 3:
-                System.out.print( "Overwriting database " + dbName );
-                handler.overWriteDatabase( con, dbName );
+                try {
+                    handler.overWriteDatabase( con, dbName );
+                    System.out.print( "Overwriting database " + dbName );
+                } catch (SQLException e){
+                    ExceptionHandler.sqlException("overwriteDatabase");
+                }
                 break;
             default:
                 System.out.println( "Not a valid command." );
@@ -185,17 +239,30 @@ public class SetupDatabase {
         }
     }
 
-    private void changeDatabaseName( Connection con ) throws Exception {
+    /**
+     * Lets the user change the database name IF the database already exists
+     */
+    private void changeDatabaseName( Connection con ) {
         System.out.print( "Whats the new name:" );
         Scanner sc = new Scanner( System.in );
         String newDbName = sc.nextLine();
         System.out.println();
 
-        boolean dbExists = handler.validateIfDBExists( con, newDbName );
+        boolean dbExists = false;
+        try {
+            dbExists = handler.validateIfDBExists( con, newDbName );
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("noValidation");
+        }
+
 
         if ( !dbExists ) {
-            handler.createDataBase( con, newDbName );
-            System.out.print( "Creating database: " + newDbName );
+            try {
+                handler.createDataBase( con, newDbName );
+                System.out.print( "Creating database: " + newDbName );
+            } catch (SQLException e){
+                ExceptionHandler.sqlException("createDatabase");
+            }
             connect.setDbName( newDbName );
         } else {
             userInputForConnectionTest( con, newDbName );
