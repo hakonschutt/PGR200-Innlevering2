@@ -9,6 +9,7 @@ If you want to add element to the txt files. Make sure you dont mess with the fi
     column_dataType/column_dataType/column_dataType
     dataType_length/dataType_length/dataType_length
     PRIMARY_KEY
+    FOREIGN_KEYS (column/table/columnInTable)
     data/data/data
     data/data/data
     
@@ -17,7 +18,7 @@ If you want to add element to the txt files. Make sure you dont mess with the fi
 2. Print tables in database
 3. Print table content 
  
-Here are the main promp for the program. This is the instructions allowed in the program.  
+These are the instructions allowed in the program.  
     
     ----------------------------------------
     OPTION COMMANDS

@@ -50,13 +50,6 @@ public class ServerThread implements Runnable {
             while ((message = clientInput.readLine()) != null){
                 System.out.println("User "+ clientID + ": " + message );
 
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException e){
-                    System.out.println();
-                }
-
-
                 if(message.equals("quit")){
                     threadOutput.println("Closing connection.");
                     break;

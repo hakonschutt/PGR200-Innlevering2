@@ -31,7 +31,7 @@ public enum FormatHandler {
      * @param tableName
      * @return
      */
-    public String getFormatFromHandler(String tableName){
+    public static String getFormatFromHandler(String tableName){
         switch (tableName ){
             case "day_teacher_unavailability":
                 return DAY_TEACHER_UNAVAILABILITY.formatString();

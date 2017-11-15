@@ -3,7 +3,7 @@ package innlevering.exception;
 /**
  * Created by hakonschutt on 14/11/2017.
  */
-public class ExceptionsToClient {
+public class ExceptionsToClient extends Exception {
     public static String sqlExceptions(String exceptionCode){
         switch(exceptionCode){
             case "table":

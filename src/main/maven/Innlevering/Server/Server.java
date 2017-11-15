@@ -1,6 +1,5 @@
 package innlevering.server;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import innlevering.exception.ExceptionHandler;
 import innlevering.server.database.DBValidator;
 import java.io.IOException;
@@ -48,7 +47,7 @@ public class Server {
     public void runServer() {
         try {
             ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-            System.out.println("server is up & ready for connetion....");
+            System.out.println("server is up & ready for connection....");
 
             while(true){
                 Socket socket = serverSocket.accept();

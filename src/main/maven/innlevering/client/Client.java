@@ -20,7 +20,6 @@ public class Client {
 
     /**
      * Connects to the socket and sets the fields for the class
-     * @throws IOException
      */
     public Client() {
         try (Socket socket = new Socket("localhost", 1024)) {
@@ -33,8 +32,8 @@ public class Client {
             System.out.println("Your session ID is " + ID + ".");
 
             socket.setSoTimeout(5000);
-
             String clientInput;
+
             do {
                 clientInput = runClient();
             } while (!clientInput.equals("quit"));
@@ -69,7 +68,6 @@ public class Client {
     /**
      * Runs the client class.
      * @param args
-     * @throws IOException
      */
     public static void main(String[] args) {
         new Client();

@@ -11,14 +11,12 @@ import java.sql.*;
  */
 public class DBDataHandler {
     private DBHandler handler;
-    private FormatHandler formatHandler;
     private DBConnect connect;
 
     /**
      * Sets up all necassary fields.
      */
     public DBDataHandler() {
-        formatHandler = new FormatHandler();
         handler = new DBHandler();
         connect = new DBConnect();
     }
@@ -74,7 +72,7 @@ public class DBDataHandler {
      * @throws Exception
      */
     public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws IOException, SQLException {
-        String format = formatHandler.getFormatFromHandler(tableName);
+        String format = FormatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getSearchCount(handler.getTableEntriesCountFromSearch( tableName, chosenColumn ), searchString);
         entrySize = entrySize > 0 ? entrySize : 0;
         String[] data = new String[entrySize + 1];
@@ -104,7 +102,7 @@ public class DBDataHandler {
      * @throws Exception
      */
     public String[] getTableContent(String tableName) throws IOException, SQLException {
-        String format = formatHandler.getFormatFromHandler(tableName);
+        String format = FormatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getCount(handler.getTableEntriesCount( tableName ));
 
         String[] data = new String[entrySize + 1];
