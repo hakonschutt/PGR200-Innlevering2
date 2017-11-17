@@ -1,6 +1,8 @@
 package com.innlevering.server.database;
 
-import java.io.IOException;
+import com.innlevering.exception.ServerFileNotFoundException;
+import com.innlevering.exception.ServerIOException;
+import com.innlevering.exception.ServerSQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +30,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public int getCount(String sql) throws IOException, SQLException {
+    public int getCount(String sql) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         try (Connection con = connect.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -36,6 +38,8 @@ public class DBHandler {
                 throw new SQLException("No tables where found");
             }
             return res.getInt("total");
+        } catch (SQLException e){
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("count"));
         }
     }
 
@@ -46,7 +50,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public int getSearchCount(String sql, String searchString) throws IOException, SQLException {
+    public int getSearchCount(String sql, String searchString) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
 
         try (Connection con = connect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -56,6 +60,8 @@ public class DBHandler {
                 throw new SQLException("No tables where found");
             }
             return res.getInt("total");
+        } catch (SQLException e){
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("count"));
         }
     }
 
@@ -73,7 +79,7 @@ public class DBHandler {
      * Returns a query that can be used t check the number of tables in a database.
      * @return
      */
-    public String getTableCountQuery() throws IOException {
+    public String getTableCountQuery() throws ServerFileNotFoundException, ServerIOException {
         return "SELECT COUNT(*) as total FROM information_schema.tables WHERE table_schema = '" + connect.getDatabaseName() + "'";
     }
 
@@ -82,7 +88,7 @@ public class DBHandler {
      * @param tableName
      * @return
      */
-    public String getColumnCountQuery( String tableName ) throws IOException {
+    public String getColumnCountQuery( String tableName ) throws ServerFileNotFoundException, ServerIOException {
         return "SELECT COUNT(*) as total " +
                 "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
                 tableName + "' AND table_schema = '" + connect.getDatabaseName() + "'";
@@ -101,7 +107,7 @@ public class DBHandler {
      * Returns a query that can be used to get alle tables in a database
      * @return
      */
-    public String prepareQuery() throws IOException {
+    public String prepareQuery() throws ServerFileNotFoundException, ServerIOException {
         return "SHOW TABLES FROM " + connect.getDatabaseName();
     }
 
@@ -111,7 +117,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public String prepareColumnDataQuery( String tableName ) throws IOException {
+    public String prepareColumnDataQuery( String tableName ) throws ServerFileNotFoundException, ServerIOException {
         String sql = "SELECT COLUMN_NAME " +
                 "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
                 tableName + "' AND table_schema = '" + connect.getDatabaseName() + "'";

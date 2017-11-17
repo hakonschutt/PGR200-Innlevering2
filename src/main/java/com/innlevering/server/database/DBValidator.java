@@ -1,6 +1,11 @@
 package com.innlevering.server.database;
 
+import com.innlevering.exception.ServerFileNotFoundException;
+import com.innlevering.exception.ServerIOException;
+import com.innlevering.exception.ServerSQLException;
+
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -21,11 +26,9 @@ public class DBValidator {
      * gets all the tables and returns true if the validateTables is true. else it returns false.
      * @return
      */
-    public boolean startDatabaseCheck () throws IOException, SQLException {
-        try (Connection con = connect.getConnection()){
-            String[] tables = getAllTables();
-            return validateTables( tables );
-        }
+    public boolean startDatabaseCheck () throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
+        String[] tables = getAllTables();
+        return tables.length > 0 && validateTables( tables );
     }
 
     /**
@@ -34,6 +37,8 @@ public class DBValidator {
      * @return
      */
     private boolean validateTables(String[] tables) {
+        if (tables.length < 1) return false;
+
         int count = 0;
         for(int i = 0; i < tables.length; i++){
             if(tables[i].equals("field_of_study") || tables[i].equals("room") || tables[i].equals("subject") || tables[i].equals("teacher")){
@@ -48,12 +53,18 @@ public class DBValidator {
      * @return
      * @throws IOException
      */
-    private String getDatabaseName() throws IOException {
-        Properties properties = new Properties();
-        InputStream input = new FileInputStream("data.properties");
-        properties.load(input);
+    private String getDatabaseName() throws ServerFileNotFoundException, ServerIOException {
+        try {
+            Properties properties = new Properties();
+            InputStream input = new FileInputStream("data.properties");
+            properties.load(input);
 
-        return properties.getProperty("db");
+            return properties.getProperty("db");
+        }  catch (FileNotFoundException e){
+            throw new ServerFileNotFoundException();
+        } catch (IOException e){
+            throw new ServerIOException(ServerIOException.getErrorMessage("readProperties"));
+        }
     }
 
     /**
@@ -61,7 +72,7 @@ public class DBValidator {
      * @return
      * @throws Exception
      */
-    public String[] getAllTables() throws IOException, SQLException {
+    public String[] getAllTables() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String sql = "SHOW TABLES FROM " + getDatabaseName();
         String[] tables = new String[9];
 
@@ -76,6 +87,8 @@ public class DBValidator {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
+        } catch (SQLException e){
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("tables"));
         }
 
         return tables;

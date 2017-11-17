@@ -1,5 +1,8 @@
 package com.innlevering.server.database;
 
+import com.innlevering.exception.ServerFileNotFoundException;
+import com.innlevering.exception.ServerIOException;
+import com.innlevering.exception.ServerSQLException;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 import java.io.FileInputStream;
@@ -20,7 +23,7 @@ public class DBConnection {
      * Returns a connection to the database.
      * @return
      */
-    public Connection getConnection() throws IOException, SQLException {
+    public Connection getConnection() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             MysqlDataSource ds = new MysqlDataSource();
@@ -35,7 +38,11 @@ public class DBConnection {
 
             return connect;
         } catch (FileNotFoundException e){
-            throw new FileNotFoundException("Unable to locate property file.");
+            throw new ServerFileNotFoundException();
+        } catch (IOException e){
+            throw new ServerIOException(ServerIOException.getErrorMessage("readProperties"));
+        } catch (SQLException e){
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("connection"));
         }
     }
 
@@ -43,14 +50,15 @@ public class DBConnection {
      * Returns the databasename from the property file.
      * @return
      */
-    public String getDatabaseName() throws IOException {
+    public String getDatabaseName() throws ServerFileNotFoundException, ServerIOException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             properties.load(input);
             return properties.getProperty("db");
         } catch (FileNotFoundException e){
-            System.out.println("Unable to locate property file.");
-            return null;
+            throw new ServerFileNotFoundException();
+        } catch (IOException e){
+            throw new ServerIOException(ServerIOException.getErrorMessage("readProperties"));
         }
     }
 }

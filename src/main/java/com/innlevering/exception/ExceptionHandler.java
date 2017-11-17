@@ -3,7 +3,7 @@ package com.innlevering.exception;
 /**
  * Created by hakonschutt on 13/11/2017.
  */
-public class ExceptionHandler extends Exception {
+public class ExceptionHandler {
 
     /**
      * Possible SQLexceptions that can be thrown in the program.

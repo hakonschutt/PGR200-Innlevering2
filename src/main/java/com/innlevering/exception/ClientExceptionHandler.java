@@ -1,9 +1,11 @@
 package com.innlevering.exception;
 
+import java.sql.SQLException;
+
 /**
  * Created by hakonschutt on 14/11/2017.
  */
-public class ExceptionsToClient extends Exception {
+public class ClientExceptionHandler {
     public static String sqlExceptions(String exceptionCode){
         switch(exceptionCode){
             case "table":

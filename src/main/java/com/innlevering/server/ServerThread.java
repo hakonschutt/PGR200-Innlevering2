@@ -1,13 +1,10 @@
 package com.innlevering.server;
 
-import com.innlevering.exception.ExceptionHandler;
-import com.innlevering.exception.ExceptionsToClient;
+import com.innlevering.exception.*;
 import com.innlevering.server.handlers.ThreadHandler;
-
 import java.io.*;
 import java.net.Socket;
 import java.io.BufferedReader;
-import java.sql.SQLException;
 
 /**
  * Main thread class for server program.
@@ -70,13 +67,13 @@ public class ServerThread implements Runnable {
 
             System.out.println(clientID + "- Closed the connection.");
         } catch (IOException e){
-            ExceptionHandler.ioException("readInput");
+            System.err.println("Unable to read client entry for client with id " + clientID);
         } finally {
             try {
                 threadOutput.println("Closing connection.");
                 socket.close();
             } catch (IOException e){
-                System.out.println("Error while closing socket. " + e.getMessage());
+                System.err.println("Error while closing socket. " + e.getMessage() + ". For client with id " + clientID);
             }
         }
     }
@@ -103,11 +100,12 @@ public class ServerThread implements Runnable {
                     printStringArrayWithoutIndex(threadHandler.getSearchStringResult(searchString, columns, columns[chosenColumn - 1], tableName));
                 }
             } catch (NumberFormatException e){
-                threadOutput.println(String.format("%-20S", "Invalid column entry."));
+                threadOutput.println("Invalid column entry.");
+            } catch (ServerFileNotFoundException | ServerIOException | ServerSQLException e){
+                threadOutput.println(ClientExceptionHandler.sqlExceptions("search"));
+                System.err.println(e.getMessage() + clientID);
             } catch (IOException e){
-                ExceptionHandler.ioException("readProperties");
-            } catch (SQLException e){
-                threadOutput.println(ExceptionsToClient.sqlExceptions("search"));
+                System.err.println("Unable to read client entry for client with id " + clientID);
             }
         }
     }
@@ -122,12 +120,10 @@ public class ServerThread implements Runnable {
             if(tableName != null){
                 printStringArrayWithoutIndex( threadHandler.getTableContent( tableName ));
             }
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            threadOutput.println(ExceptionsToClient.sqlExceptions("print"));
+        } catch (ServerFileNotFoundException | ServerIOException | ServerSQLException e){
+            threadOutput.println(ClientExceptionHandler.sqlExceptions("print"));
+            System.err.println(e.getMessage() + clientID);
         }
-
     }
 
     /**
@@ -148,12 +144,13 @@ public class ServerThread implements Runnable {
                     return threadHandler.getElementFromUserInput(tables, chosenTable);
                 }
             } catch (NumberFormatException e){
-                threadOutput.println(String.format("%-20S", "Invalid table entry."));
+                threadOutput.println("Invalid table entry.");
             }
+        } catch (ServerFileNotFoundException | ServerIOException | ServerSQLException e){
+            threadOutput.println(ClientExceptionHandler.sqlExceptions("table"));
+            System.err.println(e.getMessage() + clientID);
         } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            threadOutput.println(ExceptionsToClient.sqlExceptions("table"));
+            System.err.println("Unable to read client entry for client with id " + clientID);
         }
         return null;
     }
@@ -168,10 +165,9 @@ public class ServerThread implements Runnable {
             threadOutput.println(String.format("%-20S", "All the available tables"));
             threadOutput.println(String.format("%-20S", "----------------------------"));
             printStringArrayWithoutIndex(tables);
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            threadOutput.println(ExceptionsToClient.sqlExceptions("table"));
+        } catch (ServerFileNotFoundException | ServerIOException | ServerSQLException e){
+            threadOutput.println(ClientExceptionHandler.sqlExceptions("table"));
+            System.err.println(e.getMessage() + clientID);
         }
     }
 

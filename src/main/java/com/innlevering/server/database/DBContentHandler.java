@@ -1,8 +1,9 @@
 package com.innlevering.server.database;
 
+import com.innlevering.exception.ServerFileNotFoundException;
+import com.innlevering.exception.ServerIOException;
+import com.innlevering.exception.ServerSQLException;
 import com.innlevering.server.handlers.FormatHandler;
-
-import java.io.IOException;
 import java.sql.*;
 
 /**
@@ -26,7 +27,7 @@ public class DBContentHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllTables() throws IOException, SQLException {
+    public String[] getAllTables() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String sql = handler.prepareQuery();
         String[] tables = new String[handler.getCount(handler.getTableCountQuery())];
 
@@ -34,15 +35,15 @@ public class DBContentHandler {
              Statement stmt = con.createStatement()) {
             int i = 0;
             ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
+
+            if(!res.next()) return new String[0];
+
             do {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
         } catch (SQLException e){
-            throw new SQLException("Unable to connect with current connection");
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("tables"));
         }
 
         return tables;
@@ -54,7 +55,7 @@ public class DBContentHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllColumns(String tableName) throws IOException, SQLException {
+    public String[] getAllColumns(String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         int size = handler.getCount( handler.getColumnCountQuery( tableName ) );
         String query = handler.prepareColumnDataQuery( tableName );
         String[] columns = getColumnNames(query, size);
@@ -71,10 +72,10 @@ public class DBContentHandler {
      * @return
      * @throws Exception
      */
-    public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws IOException, SQLException {
+    public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String format = FormatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getSearchCount(handler.getTableEntriesCountFromSearch( tableName, chosenColumn ), searchString);
-        entrySize = entrySize > 0 ? entrySize : 0;
+        entrySize = entrySize > 0 ? entrySize : -1;
         String[] data = new String[entrySize + 1];
 
         if(entrySize > 0){
@@ -101,7 +102,7 @@ public class DBContentHandler {
      * @return
      * @throws Exception
      */
-    public String[] getTableContent(String tableName) throws IOException, SQLException {
+    public String[] getTableContent(String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String format = FormatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getCount(handler.getTableEntriesCount( tableName ));
 
@@ -130,7 +131,7 @@ public class DBContentHandler {
      * @param searchString
      * @return
      */
-    private String[] getAllTableContentFromSearch(String finalQuery, String[] columns, int entrySize, String format, String searchString) throws IOException, SQLException {
+    private String[] getAllTableContentFromSearch(String finalQuery, String[] columns, int entrySize, String format, String searchString) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] dataEntries = new String[entrySize];
 
         try (Connection con = connect.getConnection();
@@ -147,6 +148,8 @@ public class DBContentHandler {
                 dataEntries[i] = formatSingleString(tempData, format);
                 i++;
             }
+        } catch (SQLException e){
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("tableContent"));
         }
 
         return dataEntries;
@@ -160,15 +163,15 @@ public class DBContentHandler {
      * @param format
      * @return
      */
-    private String[] getAllTableContent(String sql, String[] columns, int entrySize, String format) throws IOException, SQLException {
+    private String[] getAllTableContent(String sql, String[] columns, int entrySize, String format) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] dataEntries = new String[entrySize];
 
         try (Connection con = connect.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
+
+            if(!res.next()) return new String[0];
+
             int i = 0;
 
             do {
@@ -180,6 +183,8 @@ public class DBContentHandler {
                 i++;
 
             } while (res.next());
+        } catch (SQLException e){
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("tableContent"));
         }
 
         return dataEntries;
@@ -191,7 +196,7 @@ public class DBContentHandler {
      * @param size
      * @return
      */
-    private String[] getColumnNames(String sql, int size) throws IOException, SQLException {
+    private String[] getColumnNames(String sql, int size) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] columns = new String[size];
 
         try (Connection con = connect.getConnection();
@@ -208,6 +213,8 @@ public class DBContentHandler {
                 i++;
 
             } while (res.next());
+        } catch (SQLException e){
+            throw new ServerSQLException(ServerSQLException.getErrorMessage("columns"));
         }
 
         return columns;

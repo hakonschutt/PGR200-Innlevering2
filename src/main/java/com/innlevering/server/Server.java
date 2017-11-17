@@ -1,6 +1,9 @@
 package com.innlevering.server;
 
 import com.innlevering.exception.ExceptionHandler;
+import com.innlevering.exception.ServerFileNotFoundException;
+import com.innlevering.exception.ServerIOException;
+import com.innlevering.exception.ServerSQLException;
 import com.innlevering.server.database.DBValidator;
 
 import java.io.IOException;
@@ -34,10 +37,8 @@ public class Server {
                 System.out.println("Unable to start server. Check you database!");
                 System.out.println("If you haven't run the initDatabase class, \nrun that and try starting again.");
             }
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("noValidation");
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
+        } catch (ServerFileNotFoundException | ServerIOException | ServerSQLException e){
+            System.err.println(e.getMessage());
         }
     }
 
