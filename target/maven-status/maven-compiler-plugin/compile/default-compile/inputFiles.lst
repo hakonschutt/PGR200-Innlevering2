@@ -1,0 +1,16 @@
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/initDatabase/DataUploadAsThread.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/initDatabase/DBValidationHandler.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/handlers/FormatHandler.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/initDatabase/SetupConnection.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/handlers/ThreadHandler.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/Server.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/database/DBConnect.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/database/DBValidator.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/database/DBDataHandler.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/initDatabase/SetupDatabase.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/client/Client.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/exception/ExceptionsToClient.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/initDatabase/FileUploadHandler.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/database/DBHandler.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/exception/ExceptionHandler.java
+/Users/hakonschutt/Skole/Semester 3/Avansert Javaprogrammering/Innlevering2/PGR200-Innlevering2/src/main/java/com/innlevering/server/ServerThread.java
