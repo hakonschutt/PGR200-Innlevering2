@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -74,23 +75,21 @@ public class DBValidator {
      */
     public String[] getAllTables() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String sql = "SHOW TABLES FROM " + getDatabaseName();
-        String[] tables = new String[9];
+        ArrayList<String> tables = new ArrayList<>();
 
         try (Connection con = connect.getConnection();
                 Statement stmt = con.createStatement()) {
-            int i = 0;
             ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
+
+            if(!res.next()) return new String[0];
+
             do {
-                tables[i] = res.getString(1);
-                i++;
+                tables.add(res.getString(1));
             } while (res.next());
         } catch (SQLException e){
             throw new ServerSQLException(ServerSQLException.getErrorMessage("tables"));
         }
 
-        return tables;
+        return tables.toArray(new String[tables.size()]);
     }
 }

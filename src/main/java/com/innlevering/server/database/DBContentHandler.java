@@ -75,10 +75,10 @@ public class DBContentHandler {
     public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String format = FormatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getSearchCount(handler.getTableEntriesCountFromSearch( tableName, chosenColumn ), searchString);
-        entrySize = entrySize > 0 ? entrySize : -1;
-        String[] data = new String[entrySize + 1];
+        String[] data;
 
         if(entrySize > 0){
+            data = new String[entrySize + 1];
             String tempQuery = prepareTableQuery(tableName, columns);
             String finalQuery = prepareSearchQuery(tempQuery, chosenColumn);
 
@@ -90,7 +90,7 @@ public class DBContentHandler {
                 data[i] = tempData[i-1];
             }
         } else {
-            data[0] = String.format("%-20s", "No data was found with this search!");
+            data = new String[]{"No data was found with this search!"};
         }
 
         return data;
