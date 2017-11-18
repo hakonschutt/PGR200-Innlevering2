@@ -28,7 +28,9 @@ public class DBHandler {
      * Returns the amount of entries based on the query
      * @param sql
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public int getCount(String sql) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         try (Connection con = connect.getConnection();
@@ -48,7 +50,9 @@ public class DBHandler {
      * @param sql
      * @param searchString
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public int getSearchCount(String sql, String searchString) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
 
@@ -78,6 +82,8 @@ public class DBHandler {
     /**
      * Returns a query that can be used t check the number of tables in a database.
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
      */
     public String getTableCountQuery() throws ServerFileNotFoundException, ServerIOException {
         return "SELECT COUNT(*) as total FROM information_schema.tables WHERE table_schema = '" + connect.getDatabaseName() + "'";
@@ -87,6 +93,8 @@ public class DBHandler {
      * Returns a query that can be used to check the number of columns in a table
      * @param tableName
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
      */
     public String getColumnCountQuery( String tableName ) throws ServerFileNotFoundException, ServerIOException {
         return "SELECT COUNT(*) as total " +
@@ -115,7 +123,8 @@ public class DBHandler {
      * Returns a query that can be used to get all columns in a table
      * @param tableName
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
      */
     public String prepareColumnDataQuery( String tableName ) throws ServerFileNotFoundException, ServerIOException {
         String sql = "SELECT COLUMN_NAME " +

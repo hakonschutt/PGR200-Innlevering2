@@ -26,6 +26,9 @@ public class DBValidator {
      * Tests if connection works.
      * gets all the tables and returns true if the validateTables is true. else it returns false.
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public boolean startDatabaseCheck () throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] tables = getAllTables();
@@ -52,9 +55,10 @@ public class DBValidator {
     /**
      * Returns the database name in the property file.
      * @return
-     * @throws IOException
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
      */
-    private String getDatabaseName() throws ServerFileNotFoundException, ServerIOException {
+    public String getDatabaseName() throws ServerFileNotFoundException, ServerIOException {
         try {
             Properties properties = new Properties();
             InputStream input = new FileInputStream("data.properties");
@@ -71,7 +75,9 @@ public class DBValidator {
     /**
      * Returns an array with all the tables in the database
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getAllTables() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String sql = "SHOW TABLES FROM " + getDatabaseName();

@@ -22,7 +22,9 @@ public class ThreadHandler {
     /**
      * Returns all tables formatted to the thread
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getAllTablesFormatted() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] tables = dataHandler.getAllTables();
@@ -40,7 +42,9 @@ public class ThreadHandler {
      * Returns all the columns formatted to the thread
      * @param tableName
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getAllColumnsFormatted( String tableName ) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String stripTableName = tableName.replaceAll(" ", "");
@@ -62,7 +66,9 @@ public class ThreadHandler {
      * @param chosenColumn
      * @param tableName
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getSearchStringResult(String searchString, String[] columns, String chosenColumn, String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String stripColumnName = chosenColumn.replaceAll(" ", "");
@@ -83,7 +89,9 @@ public class ThreadHandler {
      * Returns all table content to the thread
      * @param tableName
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getTableContent(String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String stripTableName = tableName.replaceAll(" ", "");

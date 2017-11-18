@@ -3,6 +3,7 @@ package com.innlevering.exception;
 import java.sql.SQLException;
 
 /**
+ * Main SQLException class for the server.
  * Created by hakonschutt on 17/11/2017.
  */
 public class ServerSQLException extends SQLException {

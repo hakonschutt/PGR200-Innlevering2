@@ -22,6 +22,9 @@ public class DBConnection {
     /**
      * Returns a connection to the database.
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public Connection getConnection() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         Properties properties = new Properties();
@@ -49,6 +52,8 @@ public class DBConnection {
     /**
      * Returns the databasename from the property file.
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
      */
     public String getDatabaseName() throws ServerFileNotFoundException, ServerIOException {
         Properties properties = new Properties();

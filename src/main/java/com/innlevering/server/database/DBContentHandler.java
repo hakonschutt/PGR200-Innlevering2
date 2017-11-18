@@ -25,7 +25,9 @@ public class DBContentHandler {
     /**
      * Returns all tables in the database.
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getAllTables() throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String sql = handler.prepareQuery();
@@ -53,7 +55,9 @@ public class DBContentHandler {
      * returns all the columns in a given table
      * @param tableName
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getAllColumns(String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         int size = handler.getCount( handler.getColumnCountQuery( tableName ) );
@@ -70,7 +74,9 @@ public class DBContentHandler {
      * @param chosenColumn
      * @param tableName
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getSearchContent(String searchString, String[] columns, String chosenColumn, String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String format = FormatHandler.getFormatFromHandler(tableName);
@@ -78,17 +84,24 @@ public class DBContentHandler {
         String[] data;
 
         if(entrySize > 0){
-            data = new String[entrySize + 1];
+            data = new String[entrySize + 4];
             String tempQuery = prepareTableQuery(tableName, columns);
             String finalQuery = prepareSearchQuery(tempQuery, chosenColumn);
 
             String[] tempData = getAllTableContentFromSearch(finalQuery, columns, entrySize, format, searchString);
 
-            data[0] = formatSingleString(columns, format);
+            String intro = formatSingleString(columns, format);
+            String seperator = getLineBreak(intro);
 
-            for (int i = 1; i < data.length; i++){
-                data[i] = tempData[i-1];
+            data[0] = seperator;
+            data[1] = intro;
+            data[2] = seperator;
+
+            for (int i = 3; i < data.length - 1; i++){
+                data[i] = tempData[i-3];
             }
+
+            data[data.length - 1] = seperator;
         } else {
             data = new String[]{"No data was found with this search!"};
         }
@@ -97,16 +110,33 @@ public class DBContentHandler {
     }
 
     /**
+     * Returns a string of - with the length of a given string
+     * @param datum
+     * @return
+     */
+    private String getLineBreak(String datum) {
+        String finalString = "";
+
+        for(int i = 0; i < datum.length(); i++){
+            finalString += "-";
+        }
+
+        return finalString;
+    }
+
+    /**
      * Returns all table content for a given table
      * @param tableName
      * @return
-     * @throws Exception
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     public String[] getTableContent(String tableName) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String format = FormatHandler.getFormatFromHandler(tableName);
         int entrySize = handler.getCount(handler.getTableEntriesCount( tableName ));
 
-        String[] data = new String[entrySize + 1];
+        String[] data = new String[entrySize + 4];
         int size = handler.getCount( handler.getColumnCountQuery( tableName ) );
         String query = handler.prepareColumnDataQuery( tableName );
 
@@ -114,10 +144,18 @@ public class DBContentHandler {
         String finalQuery = prepareTableQuery(tableName, columns);
         String[] tempData = getAllTableContent(finalQuery, columns, entrySize, format);
 
-        data[0] = formatSingleString(columns, format);
-        for (int i = 1; i < data.length; i++){
-            data[i] = tempData[i-1];
+        String intro = formatSingleString(columns, format);
+        String seperator = getLineBreak(intro);
+
+        data[0] = seperator;
+        data[1] = intro;
+        data[2] = seperator;
+
+        for (int i = 3; i < data.length - 1; i++){
+            data[i] = tempData[i-3];
         }
+
+        data[data.length - 1] = seperator;
 
         return data;
     }
@@ -130,6 +168,9 @@ public class DBContentHandler {
      * @param format
      * @param searchString
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     private String[] getAllTableContentFromSearch(String finalQuery, String[] columns, int entrySize, String format, String searchString) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] dataEntries = new String[entrySize];
@@ -162,6 +203,9 @@ public class DBContentHandler {
      * @param entrySize
      * @param format
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     private String[] getAllTableContent(String sql, String[] columns, int entrySize, String format) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] dataEntries = new String[entrySize];
@@ -195,6 +239,9 @@ public class DBContentHandler {
      * @param sql
      * @param size
      * @return
+     * @throws ServerFileNotFoundException
+     * @throws ServerIOException
+     * @throws ServerSQLException
      */
     private String[] getColumnNames(String sql, int size) throws ServerFileNotFoundException, ServerIOException, ServerSQLException {
         String[] columns = new String[size];
@@ -236,7 +283,6 @@ public class DBContentHandler {
      * @param tableName
      * @param columns
      * @return
-     * @throws Exception
      */
     private String prepareTableQuery(String tableName, String[] columns) {
         String finalSQL = "SELECT";

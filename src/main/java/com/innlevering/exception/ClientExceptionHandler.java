@@ -1,8 +1,7 @@
 package com.innlevering.exception;
 
-import java.sql.SQLException;
-
 /**
+ * Main exception class for client feedback. This class is only used to print error messages to the user when needed.
  * Created by hakonschutt on 14/11/2017.
  */
 public class ClientExceptionHandler {

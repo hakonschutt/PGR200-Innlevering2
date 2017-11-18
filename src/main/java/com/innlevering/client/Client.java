@@ -39,6 +39,8 @@ public class Client {
                 clientInput = runClient();
             } while (!clientInput.equals("quit"));
 
+            System.out.println(inputDataFromServer.readLine());
+
         } catch (SocketTimeoutException e){
             System.out.println("The socket timed out.");
         } catch (IOException e){

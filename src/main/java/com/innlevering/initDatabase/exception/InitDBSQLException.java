@@ -3,6 +3,7 @@ package com.innlevering.initDatabase.exception;
 import java.sql.SQLException;
 
 /**
+ * Main SQLException class for Init DB
  * Created by hakonschutt on 18/11/2017.
  */
 public class InitDBSQLException extends SQLException {
@@ -11,6 +12,11 @@ public class InitDBSQLException extends SQLException {
         super(message);
     }
 
+    /**
+     * Switch to get the error message from a given exceptioncode
+     * @param exceptionCode
+     * @return
+     */
     public static String getErrorMessage(String exceptionCode){
         switch(exceptionCode){
             case "connection":

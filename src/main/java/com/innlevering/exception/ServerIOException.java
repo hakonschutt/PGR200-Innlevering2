@@ -3,6 +3,7 @@ package com.innlevering.exception;
 import java.io.IOException;
 
 /**
+ * Main IOException class for the server.
  * Created by hakonschutt on 17/11/2017.
  */
 public class ServerIOException extends IOException {
