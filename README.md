@@ -1,4 +1,7 @@
 # Client - Server Socket program
+
+Youtube video: https://youtu.be/5yuV5h0iSCQ
+
 To ensure that this program runs as planned, you need to make sure you have initilized the initDatabase class. This class creates all the necassary tables for this server to run smoothly. Start of by running this and then run the server. After the server is up and running you can add as many clients as you want. Each client runs on its own thread.
 
 #####Correct syntax for txt file:
