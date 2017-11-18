@@ -5,6 +5,7 @@ import com.innlevering.server.handlers.ThreadHandler;
 import java.io.*;
 import java.net.Socket;
 import java.io.BufferedReader;
+import java.util.InputMismatchException;
 
 /**
  * Main thread class for server program.
@@ -81,7 +82,6 @@ public class ServerThread implements Runnable {
     /**
      * Retrives alle the tables for the user. Gets the chosen table, and prints all columns.
      * When the user has picked a column it executes the search for the string within that column.
-     * @throws Exception
      */
     private void searchCommand() {
         String tableName = chooseTable();
@@ -92,13 +92,12 @@ public class ServerThread implements Runnable {
                 threadOutput.println(String.format("%-20S", "------------------------------"));
                 printStringArrayWithIndex(columns);
 
-                int chosenColumn = Integer.parseInt(clientInput.readLine());
+                String chosenColumn = userChoice(columns);
 
-                if(chosenColumn < columns.length && chosenColumn > 0){
-                    threadOutput.println(String.format("%-20S", "Search string: "));
-                    String searchString = clientInput.readLine();
-                    printStringArrayWithoutIndex(threadHandler.getSearchStringResult(searchString, columns, columns[chosenColumn - 1], tableName));
-                }
+                threadOutput.println(String.format("%-20S", "Search string: "));
+                String searchString = clientInput.readLine();
+                printStringArrayWithoutIndex(threadHandler.getSearchStringResult(searchString, columns, chosenColumn, tableName));
+
             } catch (NumberFormatException e){
                 threadOutput.println("Invalid column entry.");
             } catch (ServerFileNotFoundException | ServerIOException | ServerSQLException e){
@@ -112,7 +111,6 @@ public class ServerThread implements Runnable {
 
     /**
      * Prints the table content based of the choosen tablen i chooseTable method
-     * @throws Exception
      */
     private void printCommand() {
         String tableName = chooseTable();
@@ -129,7 +127,6 @@ public class ServerThread implements Runnable {
     /**
      * Prints all the tables and returns a table that the user whants to search or print from based on the method calling it
      * @return
-     * @throws Exception
      */
     private String chooseTable() {
         try {
@@ -138,26 +135,40 @@ public class ServerThread implements Runnable {
             threadOutput.println(String.format("%-20S", "------------------------------"));
             printStringArrayWithIndex(tables);
 
-            try {
-                int chosenTable = Integer.parseInt(clientInput.readLine());
-                if(chosenTable < 9 && chosenTable > 0 ){
-                    return threadHandler.getElementFromUserInput(tables, chosenTable);
-                }
-            } catch (NumberFormatException e){
-                threadOutput.println("Invalid table entry.");
-            }
+            return userChoice(tables);
         } catch (ServerFileNotFoundException | ServerIOException | ServerSQLException e){
             threadOutput.println(ClientExceptionHandler.sqlExceptions("table"));
             System.err.println(e.getMessage() + clientID);
-        } catch (IOException e){
-            System.err.println("Unable to read client entry for client with id " + clientID);
+            return null;
         }
-        return null;
+    }
+
+    /**
+     * Validates if the users choice is within the scope of the size. If it evaluates to true it returns the users choice
+     * @param array
+     * @return
+     */
+    public String userChoice(String[] array) {
+        while(true){
+            int asw;
+
+            try {
+                asw = Integer.parseInt(clientInput.readLine());
+            } catch (InputMismatchException | NumberFormatException | IOException e){
+                threadOutput.println("The entry is not valid. Try again: ");
+                continue;
+            }
+
+            if (asw <= array.length && asw > 0){
+                return threadHandler.getElementFromUserInput(array, asw);
+            } else {
+                threadOutput.println("The entry is out of range. Try again: ");
+            }
+        }
     }
 
     /**
      * Prints all the tables in the database
-     * @throws Exception
      */
     private void tableCommand() {
         try {

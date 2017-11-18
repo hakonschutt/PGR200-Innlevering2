@@ -1,5 +1,8 @@
 package com.innlevering.initDatabase;
 
+import com.innlevering.initDatabase.exception.InitDBFileNotFoundException;
+import com.innlevering.initDatabase.exception.InitDBIOException;
+import com.innlevering.initDatabase.exception.InitDBSQLException;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 import java.io.FileInputStream;
@@ -47,30 +50,35 @@ public class SetupConnection {
      * It tests if it can access the database with the user information.
      * @param withDatabaseConnection
      * @return
-     * @throws SQLException
+     * @throws InitDBSQLException
      */
-    public Connection verifyConnectionWithUserInput(boolean withDatabaseConnection) throws SQLException {
-        MysqlDataSource ds = new MysqlDataSource();
+    public Connection verifyConnectionWithUserInput(boolean withDatabaseConnection) throws InitDBSQLException {
+        try {
+            MysqlDataSource ds = new MysqlDataSource();
 
-        if(withDatabaseConnection)
-            ds.setDatabaseName(this.dbName);
+            if(withDatabaseConnection)
+                ds.setDatabaseName(this.dbName);
 
-        ds.setServerName(this.host);
-        ds.setUser(this.user);
-        ds.setPassword(this.pass);
+            ds.setServerName(this.host);
+            ds.setUser(this.user);
+            ds.setPassword(this.pass);
 
-        Connection connect = ds.getConnection();
+            Connection connect = ds.getConnection();
 
-        return connect;
+            return connect;
+        } catch (SQLException e){
+            throw new InitDBSQLException(InitDBSQLException.getErrorMessage("connection"));
+        }
     }
 
     /**
      * DBConnection getConnection. Used throughout the program to get the database connection
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws InitDBFileNotFoundException
+     * @throws InitDBIOException
+     * @throws InitDBSQLException
      */
-    public Connection getConnection() throws IOException, SQLException {
+    public Connection getConnection() throws InitDBFileNotFoundException, InitDBIOException, InitDBSQLException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             MysqlDataSource ds = new MysqlDataSource();
@@ -85,7 +93,11 @@ public class SetupConnection {
 
             return connect;
         } catch (FileNotFoundException e){
-            throw new FileNotFoundException("Not able to locate property file");
+            throw new InitDBFileNotFoundException("Unable to locate property file. Make sure its not deleted.");
+        } catch (IOException e){
+            throw new InitDBIOException("Unable to read file. Make sure its formatted correctly.");
+        } catch (SQLException e){
+            throw new InitDBSQLException(InitDBSQLException.getErrorMessage("connection"));
         }
     }
 
@@ -93,7 +105,6 @@ public class SetupConnection {
     public String getPass() { return pass; }
     public String getHost() { return host; }
     public String getDbName() { return dbName; }
-
     public void setDbName(String dbName) { this.dbName = dbName; }
 
 }

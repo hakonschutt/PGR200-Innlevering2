@@ -1,10 +1,10 @@
 package com.innlevering.initDatabase;
 
-import com.innlevering.exception.ExceptionHandler;
+import com.innlevering.initDatabase.exception.InitDBFileNotFoundException;
+import com.innlevering.initDatabase.exception.InitDBIOException;
+import com.innlevering.initDatabase.exception.InitDBSQLException;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -15,10 +15,11 @@ public class FileUploadHandler {
 
     /**
      * Method initiate the thread job
-     * @throws IOException
-     * @throws SQLException
+     * @throws InitDBFileNotFoundException
+     * @throws InitDBIOException
+     * @throws InitDBSQLException
      */
-    public void startInputScan() throws IOException, SQLException {
+    public void startInputScan() throws InitDBFileNotFoundException, InitDBIOException, InitDBSQLException {
         String[] files = getAllFiles();
         Thread[] threads = new Thread[files.length];
 
@@ -29,10 +30,11 @@ public class FileUploadHandler {
         }
 
         try {
-            for (int i = 0; i < threads.length; i++)
+            for (int i = 0; i < threads.length; i++){
                 threads[i].join();
+            }
         } catch (InterruptedException e) {
-            ExceptionHandler.interruptException("threadJoin");
+            System.err.println("\nUnable to join threads from upload.\n");
         }
 
         uploadForeignKeys(files);
@@ -44,15 +46,15 @@ public class FileUploadHandler {
     /**
      * Alter tables and uploads foreign keys from text file after thread has run.
      * @param files
-     * @throws IOException
-     * @throws SQLException
+     * @throws InitDBFileNotFoundException
+     * @throws InitDBIOException
+     * @throws InitDBSQLException
      */
-    public void uploadForeignKeys(String[] files) throws IOException, SQLException {
+    public void uploadForeignKeys(String[] files) throws InitDBFileNotFoundException, InitDBIOException, InitDBSQLException {
         DBValidationHandler handler = new DBValidationHandler();
 
         for (int i = 0; i < files.length; i++)
             handler.fixForeignKeysForTable(files[i]);
-
     }
 
     /**

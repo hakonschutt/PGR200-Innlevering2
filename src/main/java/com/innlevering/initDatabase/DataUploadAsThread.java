@@ -1,6 +1,8 @@
 package com.innlevering.initDatabase;
 
-import com.innlevering.exception.ExceptionHandler;
+import com.innlevering.initDatabase.exception.InitDBFileNotFoundException;
+import com.innlevering.initDatabase.exception.InitDBIOException;
+import com.innlevering.initDatabase.exception.InitDBSQLException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -30,17 +32,19 @@ public class DataUploadAsThread implements Runnable {
             createQuery(file);
             insertQuery(file);
             System.out.println("Finished importing " + file);
-        } catch (IOException | SQLException e){
-            System.out.println("Unable to finish thread job for " + file);
+        } catch (InitDBFileNotFoundException | InitDBIOException | InitDBSQLException e){
+            System.err.println("\nUnable to finish import of " + file + ". " + e.getMessage() + "\n");
         }
     }
 
     /**
      * Creates query to create table from the input file
      * @param fileName
-     * @throws IOException
+     * @throws InitDBFileNotFoundException
+     * @throws InitDBIOException
+     * @throws InitDBSQLException
      */
-    private void createQuery(String fileName) throws IOException, SQLException {
+    private void createQuery(String fileName) throws InitDBFileNotFoundException, InitDBIOException, InitDBSQLException {
         String file = "input/" + fileName;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String table = in.readLine();
@@ -61,7 +65,9 @@ public class DataUploadAsThread implements Runnable {
             executeCreate(sql);
 
         } catch (FileNotFoundException e){
-            ExceptionHandler.fileException("fileNotFound");
+            throw new InitDBFileNotFoundException("Unable locate " + fileName + ".");
+        } catch (IOException e){
+            throw new InitDBIOException("Unable to read file. Make sure its formatted correctly.");
         }
     }
 
@@ -71,20 +77,23 @@ public class DataUploadAsThread implements Runnable {
      * @throws IOException
      * @throws SQLException
      */
-    private void executeCreate(String sql) throws IOException, SQLException{
+    private void executeCreate(String sql) throws InitDBFileNotFoundException, InitDBIOException, InitDBSQLException {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
+        } catch (SQLException e){
+            throw new InitDBSQLException(InitDBSQLException.getErrorMessage("createTableQuery"));
         }
     }
 
     /**
      * Creates insert Query from the current file
      * @param filename
-     * @throws IOException
+     * @throws InitDBFileNotFoundException
+     * @throws InitDBIOException
      * @throws SQLException
      */
-    private void insertQuery(String filename) throws IOException, SQLException {
+    private void insertQuery(String filename) throws InitDBFileNotFoundException, InitDBIOException, InitDBSQLException {
         String file = "input/" + filename;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String db = in.readLine();
@@ -120,7 +129,9 @@ public class DataUploadAsThread implements Runnable {
                 executeInsert(sql, var);
             }
         } catch (FileNotFoundException e) {
-            ExceptionHandler.fileException("fileNotFound");
+            throw new InitDBFileNotFoundException("Unable locate " + filename + ".");
+        } catch (IOException e){
+            throw new InitDBIOException("Unable to read file. Make sure its formatted correctly.");
         }
     }
 
@@ -128,16 +139,19 @@ public class DataUploadAsThread implements Runnable {
      * Executes insert query for table information.
      * @param sql
      * @param var
-     * @throws IOException
-     * @throws SQLException
+     * @throws InitDBFileNotFoundException
+     * @throws InitDBIOException
+     * @throws InitDBSQLException
      */
-    private void executeInsert(String sql, String[] var) throws IOException, SQLException {
+    private void executeInsert(String sql, String[] var) throws InitDBFileNotFoundException, InitDBIOException, InitDBSQLException {
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             for (int i = 0; i < var.length; i++){
                 ps.setObject(i + 1, var[i]);
             }
             ps.executeUpdate();
+        } catch (SQLException e){
+            throw new InitDBSQLException(InitDBSQLException.getErrorMessage("insertDataToTableQuery"));
         }
     }
 }

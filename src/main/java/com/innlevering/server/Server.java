@@ -1,20 +1,18 @@
 package com.innlevering.server;
 
-import com.innlevering.exception.ExceptionHandler;
 import com.innlevering.exception.ServerFileNotFoundException;
 import com.innlevering.exception.ServerIOException;
 import com.innlevering.exception.ServerSQLException;
 import com.innlevering.server.database.DBValidator;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLException;
 
 /**
  * server class for server - client program.
  * Creates a socketServer with the necassary port.
  * Sends the client into a uniq thread when a clients tries to connect
+ *
  * Created by hakonschutt on 21/10/2017.
  */
 public class Server {

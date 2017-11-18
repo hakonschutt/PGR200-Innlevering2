@@ -3,7 +3,7 @@ subject_id/subject/number_of_attendees
 varchar/varchar/int
 255/255/11
 subject_id
-nofk
+nofk/
 PGR200/Avansert Javaprogrammering/50
 IS3200/Mobile økosystemer/30
 PG3300/Software design/80
