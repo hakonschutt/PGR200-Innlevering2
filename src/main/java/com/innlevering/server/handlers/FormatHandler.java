@@ -12,7 +12,8 @@ public enum FormatHandler {
     STUDY_SUBJECT("| %-5s| %-9s| %-15s|"),
     SUBJECT("| %-12s| %-40s| %-20s|"),
     TEACHER("| %-5s| %-27s| %-35s|"),
-    TEACHER_SUBJECT("| %-5s| %-13s| %-10s|");
+    TEACHER_SUBJECT("| %-5s| %-13s| %-10s|"),
+    SEMESTER_PLAN("| %-5S| %-5S| %-8S| %-8S| %-12S| %-12S|");
 
     private String formatString;
 
@@ -49,6 +50,8 @@ public enum FormatHandler {
                 return TEACHER.formatString();
             case "teacher_subject":
                 return TEACHER_SUBJECT.formatString();
+            case "semester_plan":
+                return SEMESTER_PLAN.formatString();
         }
         return null;
     }

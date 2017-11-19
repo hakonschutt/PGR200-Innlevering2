@@ -66,7 +66,7 @@ public class ServerThread implements Runnable {
                 threadOutput.println("Write a command: ");
             }
 
-            System.out.println(clientID + "- Closed the connection.");
+            System.out.println(clientID + " - Closed the connection.");
         } catch (IOException e){
             System.err.println("Unable to read client entry for client with id " + clientID);
         } finally {
